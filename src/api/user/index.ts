@@ -1,24 +1,36 @@
 import request from '@/api/request'
 
-export const userLogin = (params: UserInfo): Promise<ResponseDataType<UserInfo>> => {
+// 登录接口
+export const userLogin = (params: Partial<UserInfo>): Promise<ResponseDataType<UserInfo>> => {
   return request({
-    url: '/login',
+    url: '/user/login',
     method: 'GET',
     params
   })
 }
 
+// 获取主题接口
 export const getTheme = (): Promise<ResponseDataType<{ theme: any }>> => {
   return request({
-    url: '/getTheme',
+    url: '/user/getTheme',
     method: 'GET'
   })
 }
 
+// 修改主题接口
 export const updateTheme = (data: unknown): Promise<ResponseDataType> => {
   return request({
-    url: '/updateTheme',
-    method: 'POST',
+    url: '/user/updateTheme',
+    method: 'PUT',
+    data
+  })
+}
+
+// 修改密码
+export const updatePwd = (data: updatePwdType): Promise<ResponseDataType> => {
+  return request({
+    url: '/user/updatePwd',
+    method: 'PUT',
     data
   })
 }

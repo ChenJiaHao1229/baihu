@@ -50,17 +50,11 @@ export default class UserServiceImpl implements UserService {
           data: { waitTime }
         }
       } else {
-        return {
-          code: 400,
-          message: '账号或密码错误！',
-          status: false
-        }
+        return { code: 400, message: '账号或密码错误！', status: false }
       }
     }
     // 生成token
-    const payload = {
-      username
-    }
+    const payload = { id, username }
     const token = tokenManage.sign(payload)
     await AuthModel.update(
       {
@@ -74,12 +68,7 @@ export default class UserServiceImpl implements UserService {
       { where: { id } }
     )
     // 登录成功
-    return {
-      status: true,
-      code: 200,
-      message: '登录成功！',
-      data: { token }
-    }
+    return { status: true, code: 200, message: '登录成功！', data: { token } }
   }
 
   // 获取主题数据
@@ -90,6 +79,15 @@ export default class UserServiceImpl implements UserService {
 
   // 修改主题数据
   public async updateTheme(data: any) {
-    return (await SettingModel.update({ value: data }, { where: { key: 'theme' } }))[0]
+    return (await SettingModel.update({ value: data }, { where: { key: 'theme' } }))[0] !== 0
+  }
+
+  // 修改密码
+  public async updatePwd(data: updatePwdType, req: Request) {
+    const { oldPwd, newPwd } = data
+    const { id } = req.user as { id: string }
+    return (
+      (await AuthModel.update({ password: newPwd }, { where: { id, password: oldPwd } }))[0] !== 0
+    )
   }
 }

@@ -33,13 +33,27 @@ export default (router: Router) => {
   })
 
   // 修改主题数据
-  router.post('/updateTheme', async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/updateTheme', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await userServiceImpl.updateTheme(req.body)
-      if (result !== 0) {
+      if (result) {
         res.send({ code: 200, status: true, message: '修改成功！' })
       } else {
         res.send({ code: 200, status: false, message: '修改失败！' })
+      }
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  // 修改密码
+  router.put('/updatePwd', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await userServiceImpl.updatePwd(req.body, req)
+      if (result) {
+        res.send({ code: 200, status: true, message: '修改成功！' })
+      } else {
+        res.send({ code: 200, status: false, message: '密码错误！' })
       }
     } catch (error) {
       next(error)

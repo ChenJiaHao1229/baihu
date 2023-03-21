@@ -9,5 +9,7 @@ export default interface UserService {
 
   getTheme: () => Promise<any>
 
-  updateTheme: (data: any) => void
+  updateTheme: (data: any) => Promise<boolean>
+
+  updatePwd: (data: updatePwdType, req: Request) => Promise<boolean>
 }

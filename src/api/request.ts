@@ -4,7 +4,7 @@ import { message } from 'antd'
 import eventBus from '@/utils/eventBus'
 
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: constant.apiPrefix,
   timeout: 60 * 1000
 })
 

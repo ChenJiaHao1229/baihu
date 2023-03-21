@@ -11,7 +11,8 @@ export default async () => {
 
     // 初始化表格数据
     if ((await AuthModel.count()) === 0) {
-      await AuthModel.create({ username: 'admin', password: 'admin' })
+      // 账号密码初始化为 admin
+      await AuthModel.create({ username: 'admin', password: '21232f297a57a5a743894a0e4a801fc3' })
     }
     if ((await SettingModel.count()) === 0) {
       await SettingModel.bulkCreate([

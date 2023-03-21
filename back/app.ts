@@ -46,6 +46,6 @@ import Task from './controllers/Task'
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
   // 加载其他路由
-  app.use(User(router))
-  app.use(Task(router))
+  app.use('/user', User(router))
+  app.use('/task', Task(router))
 })()

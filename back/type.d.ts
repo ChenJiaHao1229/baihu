@@ -10,7 +10,7 @@ type UserInfo = {
   waitTime: number
 }
 // 返回数据格式
-type ResponseDataType<T = undefined> = {
+type ResponseDataType<T = any> = {
   code: number
   status: boolean
   message?: string
@@ -51,4 +51,10 @@ type TaskInfo = {
   updatedAt?: string // 修改时间
   lastRunTime?: number // 上一次运行时间
   runTime?: number // 运行花费时间
+}
+
+// 修改密码
+type updatePwdType = {
+  oldPwd: string
+  newPwd: string
 }

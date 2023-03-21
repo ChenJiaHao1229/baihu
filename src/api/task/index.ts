@@ -2,14 +2,14 @@ import request from '@/api/request'
 
 export const createTask = (data: TaskInfo): Promise<TaskListResponseType> => {
   return request({
-    url: '/createTask',
+    url: '/task/createTask',
     method: 'POST',
     data
   })
 }
 export const getTaskList = (data: PostSearchListType): Promise<TaskListResponseType> => {
   return request({
-    url: '/getTaskList',
+    url: '/task/getTaskList',
     method: 'POST',
     data
   })
@@ -17,7 +17,7 @@ export const getTaskList = (data: PostSearchListType): Promise<TaskListResponseT
 
 export const updateTask = (id: string, data: PostSearchListType): Promise<TaskListResponseType> => {
   return request({
-    url: `/updateTask/${id}`,
+    url: `/task/updateTask/${id}`,
     method: 'PUT',
     data
   })

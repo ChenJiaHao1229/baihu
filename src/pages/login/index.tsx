@@ -4,9 +4,10 @@ import { userLogin } from '@/api/user'
 import constant from '@/utils/constant'
 import './index.less'
 import { useNavigate } from 'react-router-dom'
+import cryptoJS from 'crypto-js'
 
 const Login = () => {
-  const [form] = Form.useForm()
+  const [form] = Form.useForm<UserInfo>()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [waitTime, setWaitTime] = useState(0)
@@ -25,7 +26,8 @@ const Login = () => {
     setLoading(true)
     try {
       const values = await form.validateFields()
-      const res = await userLogin(values)
+      const { username, password } = values
+      const res = await userLogin({ username, password: cryptoJS.MD5(password).toString() })
       if (res.status) {
         message.success(res.message)
         // 存储token数据

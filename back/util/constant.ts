@@ -14,7 +14,7 @@ const themePath = path.join(configPath, 'theme.json')
 const authError = '用户名或者密码错误，请重新认证！'
 const loginFaild = '请先登录!'
 // 校验白名单
-const whitePath = ['/login']
+const whitePath = ['/user/login']
 export default {
   BH_Secret,
   BH_ExpiresIn,
