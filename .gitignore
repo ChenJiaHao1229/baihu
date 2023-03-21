@@ -1,0 +1,7 @@
+/node_modules
+/build
+/data
+/dist
+
+## 数据库信息不上传
+/back/data/index.ts
