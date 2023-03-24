@@ -20,7 +20,7 @@ const statusList = [
   { text: '异常', color: 'error', icon: <CloseCircleOutlined /> },
   { text: '未知', color: 'default', icon: <QuestionCircleOutlined /> }
 ]
-const TaskTable = () => {
+const TaskTable: React.FC = () => {
   const [form] = Form.useForm() // 创建任务的表单对象
   const [createOpen, setCreateOpen] = useState(false) // 创建/编辑弹窗控制
   const [operation, setOperation] = useState<TaskInfo>() // 选中操作的数据

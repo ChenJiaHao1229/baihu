@@ -58,3 +58,18 @@ type updatePwdType = {
   oldPwd: string
   newPwd: string
 }
+
+// 文件数据类型
+type FileInfo = {
+  isFile(): boolean
+  isDirectory(): boolean
+  isBlockDevice(): boolean
+  isCharacterDevice(): boolean
+  isSymbolicLink(): boolean
+  isFIFO(): boolean
+  isSocket(): boolean
+  key: string
+  name: string
+  type: number
+  children?: FileInfo[]
+}

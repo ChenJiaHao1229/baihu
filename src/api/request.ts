@@ -31,11 +31,11 @@ request.interceptors.response.use(
   (res) => res.data,
   (err) => {
     try {
-      const respStatus = err.response.status
-      message.error(`${err?.message || err}`)
-      if ([502, 504].includes(respStatus)) {
+      const { status, data, statusText } = err?.response
+      message.error(`${data?.message || statusText || err?.message || err}`)
+      if ([502, 504].includes(status)) {
         eventBus.$emit('navigate', `/error`)
-      } else if (respStatus === 401) {
+      } else if (status === 401) {
         if (location.pathname !== '/login') {
           localStorage.removeItem(constant.authToken)
           eventBus.$emit('navigate', `/login`)

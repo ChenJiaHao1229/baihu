@@ -43,14 +43,18 @@ const BHLayout = () => {
         }}
         location={{ pathname }}
         menuItemRender={(item, dom) => (
-          <div style={{ width: '100%' }} onClick={() => navigate(item.path || '/')}>
+          <div style={{ width: '100%' }} onClick={() => navigate(item.path || '/')} key={item.key}>
             {dom}
           </div>
         )}
         {...settings}
-        contentStyle={{ padding: 24, height: '100vh' }}
+        contentStyle={{ padding: 24, height: '100vh', overflowY: 'auto' }}
       >
-        <ProCard bordered style={{ height: '100%', minHeight: 800, overflowY: 'auto' }}>
+        <ProCard
+          bordered
+          style={{ height: '100%', minHeight: 600 }}
+          bodyStyle={{ overflowY: 'auto' }}
+        >
           {/* 懒加载内容 */}
           <Suspense fallback={<Spin tip="加载中..." size="large" />}>
             <Outlet />
@@ -74,7 +78,7 @@ const BHLayout = () => {
         hideCopyButton
         hideHintAlert
         disableUrlParams
-        enableDarkTheme
+        // enableDarkTheme
       />
     </div>
   )

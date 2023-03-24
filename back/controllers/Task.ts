@@ -4,7 +4,7 @@ import { NextFunction, Request, Response, Router } from 'express'
 export default (router: Router) => {
   const taskServiceImpl = new TaskServiceImpl()
   // 创建任务
-  router.post('/createTask', async (req: Request, res: Response, next: NextFunction) => {
+  router.post('/task', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await taskServiceImpl.createTask(req.body)
       res.send({ code: 200, status: true, message: '创建成功 ', data })
@@ -14,7 +14,7 @@ export default (router: Router) => {
   })
 
   // 获取任务列表
-  router.post('/getTaskList', async (req: Request, res: Response, next: NextFunction) => {
+  router.post('/tasklist', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await taskServiceImpl.getTaskList(req.body as PostSearchListType)
       res.send({ code: 200, status: true, message: '创建成功 ', data })
@@ -23,7 +23,7 @@ export default (router: Router) => {
     }
   })
 
-  router.put('/updateTask/:id', async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/task/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await taskServiceImpl.updateTask(req.params.id, req.body)
       res.send({ code: 200, status: true, message: '修改成功 ' })

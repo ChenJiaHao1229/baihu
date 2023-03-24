@@ -6,7 +6,7 @@ import './index.less'
 import { useNavigate } from 'react-router-dom'
 import cryptoJS from 'crypto-js'
 
-const Login = () => {
+const Login: React.FC = () => {
   const [form] = Form.useForm<UserInfo>()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)

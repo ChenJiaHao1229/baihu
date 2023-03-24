@@ -97,5 +97,26 @@ export default {
       desc: '为组件开发场景而生的文档工具',
       url: 'https://d.umijs.org/zh-CN'
     }
+  ],
+  // Monaco主题
+  monacoThere: [
+    { label: 'Visual Studio', value: 'vs' },
+    { label: 'Visual Studio Dark', value: 'vs-dark' },
+    { label: 'High Contrast Dark', value: 'hc-black' }
+  ],
+  // Monaco语言
+  monacoLanguage: [
+    { label: 'TypeScript', value: 'typescript' },
+    { label: 'JavaScript', value: 'javascript' },
+    { label: 'Java', value: 'java' },
+    { label: 'JSON', value: 'json' },
+    { label: 'Yaml', value: 'yaml' },
+    { label: 'SQL', value: 'sql' },
+    { label: 'Shell', value: 'shell' },
+    { label: 'Python', value: 'python' },
+    { label: 'PHP', value: 'php' },
+    { label: 'HTML', value: 'html' },
+    { label: 'CSS', value: 'css' },
+    { label: 'Less', value: 'less' }
   ]
 }

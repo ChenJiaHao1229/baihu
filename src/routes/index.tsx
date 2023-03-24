@@ -4,6 +4,7 @@ import BHLayout from '@/layout/index'
 import Login from '@/pages/login/index'
 const Task = lazy(() => import('@/pages/task/index'))
 const Setting = lazy(() => import('@/pages/setting/index'))
+const Script = lazy(() => import('@/pages/script/index'))
 
 export const routes: RouteObject[] = [
   {
@@ -18,6 +19,10 @@ export const routes: RouteObject[] = [
       {
         path: '/setting',
         element: <Setting />
+      },
+      {
+        path: '/scripts',
+        element: <Script />
       }
     ]
   },

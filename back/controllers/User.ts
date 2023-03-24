@@ -7,10 +7,7 @@ export default (router: Router) => {
   // 登录接口
   router.get('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { username, password } = req.query as {
-        username: string
-        password: string
-      }
+      const { username, password } = req.query as { username: string; password: string }
       const data = await userServiceImpl.login(username, password, req)
       res.send(data)
     } catch (error) {
@@ -19,42 +16,32 @@ export default (router: Router) => {
   })
 
   // 获取主题数据
-  router.get('/getTheme', async (req: Request, res: Response, next: NextFunction) => {
+  router.get('/theme', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const theme = await userServiceImpl.getTheme()
-      res.send({
-        code: 200,
-        status: true,
-        data: { theme: theme?.value }
-      })
+      res.send({ code: 200, status: true, data: { theme: theme?.value } })
     } catch (error) {
       return next(error)
     }
   })
 
   // 修改主题数据
-  router.put('/updateTheme', async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/theme', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await userServiceImpl.updateTheme(req.body)
-      if (result) {
-        res.send({ code: 200, status: true, message: '修改成功！' })
-      } else {
-        res.send({ code: 200, status: false, message: '修改失败！' })
-      }
+      if (result) res.send({ code: 200, status: true, message: '修改成功！' })
+      else res.send({ code: 200, status: false, message: '修改失败！' })
     } catch (error) {
       next(error)
     }
   })
 
   // 修改密码
-  router.put('/updatePwd', async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/password', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await userServiceImpl.updatePwd(req.body, req)
-      if (result) {
-        res.send({ code: 200, status: true, message: '修改成功！' })
-      } else {
-        res.send({ code: 200, status: false, message: '密码错误！' })
-      }
+      if (result) res.send({ code: 200, status: true, message: '修改成功！' })
+      else res.send({ code: 200, status: false, message: '密码错误！' })
     } catch (error) {
       next(error)
     }

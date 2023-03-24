@@ -8,8 +8,8 @@ import eventBus from '@/utils/eventBus'
 
 function App() {
   const navigate = useNavigate()
-  // 在事件总线上添加方法
   useEffect(() => {
+    // 在事件总线上添加方法
     eventBus.$on('navigate', navigate)
   }, [])
   const routes = useRoutes(routeList)

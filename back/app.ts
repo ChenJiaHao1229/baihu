@@ -1,12 +1,13 @@
 import express, { Request, Response, NextFunction, Router } from 'express'
 import config from './util/constant'
 import Logger from './util/logger'
-import User from './controllers/User'
 import { tokenManage } from './pojo/TokenManage'
 import initFile from './util/initFile'
 import bodyParser from 'body-parser'
 import initDb from './util/initDb'
+import User from './controllers/User'
 import Task from './controllers/Task'
+import Script from './controllers/Script'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()
@@ -48,4 +49,15 @@ import Task from './controllers/Task'
   // 加载其他路由
   app.use('/user', User(router))
   app.use('/task', Task(router))
+  app.use('/script', Script(router))
+
+  // 统一错误处理
+  app.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {
+    res.status(err.status || 500)
+    res.json({
+      code: err.status || 500,
+      status: false,
+      message: err.message || err
+    })
+  })
 })()
