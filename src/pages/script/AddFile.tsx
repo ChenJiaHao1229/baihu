@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react'
 type AddFilePropsType = {
   open: boolean
   setOpen: (open: boolean) => any
-  onOk: (value: { name: string; type: number }, setLoading: (loading: boolean) => void) => any
-  data?: { key: string; name: string; type: number }
+  onOk: (value: FileInfo, setLoading: (loading: boolean) => void) => any
+  data?: FileInfo
 }
 
 const AddFile: React.FC<AddFilePropsType> = ({ open, setOpen, data, onOk }) => {
@@ -31,7 +31,7 @@ const AddFile: React.FC<AddFilePropsType> = ({ open, setOpen, data, onOk }) => {
       onCancel={() => setOpen(false)}
       bodyStyle={{ padding: '24px 0px' }}
       confirmLoading={loading}
-      onOk={() => form.validateFields().then((values) => onOk(values, setLoading))}
+      onOk={() => form.validateFields().then((values) => onOk({ ...data, ...values }, setLoading))}
     >
       <Form form={form} layout="vertical">
         <Form.Item label="类型" name="type" rules={[{ required: true }]} initialValue={0}>

@@ -13,7 +13,7 @@ import {
   HomeOutlined
 } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import { Button, Modal, Dropdown, Menu, message, Select } from 'antd'
+import { Button, Modal, Dropdown, Menu, message, Select, Spin } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
@@ -24,9 +24,7 @@ import AddFile from './AddFile'
 const { confirm } = Modal
 
 const Script: React.FC = () => {
-  const [files, setFiles] = useState<FileInfo[]>([]) // 左侧菜单所有数据
   const [isEdit, setIsEdit] = useState<boolean>(false) // 编辑器是否可编辑
-  const [activeKey, setActiveKey] = useState<string>('') // 选择的文件夹key
   const [breadcrumbItems, setBreadcrumbItems] = useState<FileInfo[]>([]) // 面包屑
   const [menuItems, setMenuItems] = useState<FileInfo[]>([]) // 左侧菜单栏
   const [theme, setTheme] = useState(constant.monacoThere[0].value) // 编辑器主题
@@ -35,61 +33,30 @@ const Script: React.FC = () => {
   const [operation, setOperation] = useState<FileInfo>() // 操作项数据
   const [editFile, setEditFile] = useState<FileInfo & { content: string }>() // 编辑中的文件数据
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
+  const [menuLoading, setMenuLoading] = useState<boolean>(false) // 菜单加载控制
 
+  // 监听面包屑变化
   useEffect(() => {
     getScriptMenu()
-  }, [])
-  // 监听选择的文件夹变化 变换重新计算
-  useEffect(() => {
-    if (!activeKey) {
-      setMenuItems(files)
-      setBreadcrumbItems([])
-      return
-    }
-    if (files.length === 0) return
-    let menuData = files
-    const breadcrumbData: FileInfo[] = []
-    // 遍历查询目录
-    activeKey.split('-').forEach((item) => {
-      breadcrumbData.push(menuData[parseInt(item)])
-      menuData = menuData[parseInt(item)].children || []
-    })
-    setBreadcrumbItems(breadcrumbData)
-    setMenuItems(menuData)
-  }, [activeKey, files])
+  }, [breadcrumbItems])
 
   // 获取目录数据
   const getScriptMenu = () => {
-    getScriptList().then((res) => {
-      if (res.status) {
-        formatRes(res.data!)
-        // 对打开的文件 key进行更新
-        if (editFile) {
-          // 先遍历查询到目录
-          let menuData = files
-          activeKey
-            .split('-')
-            .slice(0, -1)
-            .forEach((item) => {
-              menuData = menuData[parseInt(item)].children || []
-            })
-          // 通过名字查找
-          const file = menuData.find((item) => item.name === editFile.name)
-          if (file) {
-            setEditFile({ ...editFile, key: file.key })
-          }
+    setMenuLoading(true)
+    getScriptList({ name: getPath() })
+      .then((res) => {
+        if (res.status) {
+          formatRes(res.data!)
+          setMenuItems(res.data!)
         }
-        setFiles(res.data!)
-      }
-    })
+      })
+      .finally(() => setMenuLoading(false))
   }
 
   // 为文件列表添加唯一key
-  const formatRes = (data: FileInfo[], key?: string) => {
-    data.forEach((item, index) => {
-      item.key = key ? `${key}-${index}` : `${index}`
-      if (item.children && item.children.length > 0) formatRes(item.children, item.key)
-    })
+  const formatRes = (data: FileInfo[]) => {
+    const path = getPath()
+    data.forEach((item) => (item.key = path + item.name))
   }
 
   // 获取menu菜单
@@ -123,7 +90,7 @@ const Script: React.FC = () => {
               className={styles.menuItem}
               onDoubleClick={() => {
                 // 判断点击的是文件还是文件夹
-                if (item.type) setActiveKey(item.key)
+                if (item.type) setBreadcrumbItems([...breadcrumbItems, item])
                 else if (editorRef.current) openFile(item)
                 else message.warning('请等待组件加载成功~')
               }}
@@ -142,11 +109,20 @@ const Script: React.FC = () => {
     return {
       items: [
         {
-          title: <HomeOutlined className="pointer" onClick={() => setActiveKey('')} />,
+          title: <HomeOutlined className="pointer" onClick={() => setBreadcrumbItems([])} />,
           key: 'dir-home'
         },
         ...breadcrumbItems.map((item) => ({
-          title: <span onClick={() => setActiveKey(item.key)}>{item.name}</span>,
+          title: (
+            <span
+              onClick={() =>
+                // 通过 / 来截取指定长度的面包屑
+                setBreadcrumbItems(breadcrumbItems.slice(0, item.key.split('/').length - 1))
+              }
+            >
+              {item.name}
+            </span>
+          ),
           key: item.key
         }))
       ]
@@ -158,19 +134,40 @@ const Script: React.FC = () => {
       items: [
         {
           label: (
-            <span
+            <div
+              onClick={() => {
+                // 判断点击的是文件还是文件夹
+                if (file.type) setBreadcrumbItems([...breadcrumbItems, file])
+                else if (editorRef.current) openFile(file)
+                else message.warning('请等待组件加载成功~')
+              }}
+              className={styles.menuItem}
+            >
+              打开
+            </div>
+          ),
+          key: 'open'
+        },
+        {
+          label: (
+            <div
               onClick={() => {
                 setAddDirOpen(true)
                 setOperation(file)
               }}
+              className={styles.menuItem}
             >
               重命名
-            </span>
+            </div>
           ),
           key: 'rename'
         },
         {
-          label: <span onClick={() => deleteConfirm(file)}>删除</span>,
+          label: (
+            <div onClick={() => deleteConfirm(file)} className={styles.menuItem}>
+              删除
+            </div>
+          ),
           key: 'del'
         }
       ]
@@ -185,30 +182,31 @@ const Script: React.FC = () => {
   }
 
   // 创建弹窗回调函数
-  const handleAdd = async (
-    { name, type }: { name: string; type: number },
-    setLoading: (loading: boolean) => any
-  ) => {
-    if (!name) {
-      message.warning('文件名不能为空！')
-      return
-    }
+  const handleAdd = async (file: FileInfo, setLoading: (loading: boolean) => any) => {
     try {
       setLoading(true)
       const path = getPath()
       // 判断是编辑还是新增
       if (operation) {
-        const res = await renameDir({ oldName: path + operation.name, newName: path + name })
+        const res = await renameDir({ oldName: path + operation.name, newName: path + file.name })
         if (res.status) {
           message.success(res.message)
           setAddDirOpen(false)
-          // 判断修改的文件是否为当前打开文件 如果是则需要更新编辑存储数据
-          if (operation && operation.key === editFile?.key) setEditFile({ ...editFile!, name })
+          // 判断修改的文件是否为当前打开的文件
+          if (file.key === operation.key)
+            setEditFile({ ...editFile!, name: file.name, key: path + file.name })
+          setMenuItems(
+            menuItems.map((item) => {
+              if (item.key === file.key) {
+                return { ...item!, name: file.name, key: path + file.name }
+              } else return item
+            })
+          )
         } else {
           message.error(res.message)
         }
       } else {
-        const res = await createFile({ name: path + name, type })
+        const res = await createFile({ name: path + file.name, type: file.type })
         if (res.status) {
           message.success(res.message)
           setAddDirOpen(false)
@@ -223,6 +221,10 @@ const Script: React.FC = () => {
   }
   // 确认删除
   const deleteConfirm = (file: FileInfo) => {
+    if (file.key === editFile?.key) {
+      message.warning('当前文件打开中，无法删除')
+      return
+    }
     confirm({
       title: '确认删除？',
       content: file.type !== 0 && file?.children?.length! > 0 && '子文件也会被删除',
@@ -244,7 +246,7 @@ const Script: React.FC = () => {
           type="primary"
           onClick={() => {
             updateFileContent({
-              name: editFile?.name!,
+              name: getPath() + editFile?.name!,
               content: editorRef.current?.getValue()!
             }).then((res) => {
               if (res.status) {
@@ -286,6 +288,7 @@ const Script: React.FC = () => {
       return
     }
     const path = getPath()
+    editorRef.current?.setValue('加载中...')
     getFileContent({ name: path + file.name }).then((res) => {
       if (res.status) {
         editorRef.current?.setValue(res.data)
@@ -295,7 +298,13 @@ const Script: React.FC = () => {
   }
   return (
     <div className={styles.script}>
-      <Menu className={styles.side} selectable={false} items={getMenuItems()} />
+      {menuLoading ? (
+        <div className={`${styles.side} ${styles.sideLoading}`}>
+          <Spin tip="加载中..." size="large" />
+        </div>
+      ) : (
+        <Menu className={styles.side} selectedKeys={[editFile?.key || '']} items={getMenuItems()} />
+      )}
       <div className={styles.content}>
         <PageHeader
           title={editFile?.name || '暂未打开文件'}

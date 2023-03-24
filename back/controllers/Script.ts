@@ -8,7 +8,9 @@ export default (router: Router) => {
   // 获取目录列表
   router.get('/list', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await FileSystem.readDir(constant.scriptPath)
+      const data = await FileSystem.readDir(
+        path.join(constant.scriptPath, req.query.name as string)
+      )
       res.send({ code: 200, status: true, message: '修改成功!', data })
     } catch (error) {
       next(error)
@@ -54,8 +56,9 @@ export default (router: Router) => {
   // 获取文件内容
   router.get('/file', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name } = req.query as { name: string }
-      const data = await FileSystem.readFile(path.join(constant.scriptPath, name))
+      const data = await FileSystem.readFile(
+        path.join(constant.scriptPath, req.query.name as string)
+      )
       res.send({ code: 200, status: true, message: '读取成功！', data })
     } catch (error) {
       next(error)

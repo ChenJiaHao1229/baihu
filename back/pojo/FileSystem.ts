@@ -84,20 +84,31 @@ export default class FileSystem {
       resolve(true)
     })
   }
-  // 读取目录下文件
-  public static readDir(filePath: string): Promise<FileInfo[]> {
+  // 读取目录下所有文件及子文件
+  public static readAllDir(filePath: string): Promise<FileInfo[]> {
     return new Promise((resolve, reject) => {
       if (!fs.existsSync(filePath)) reject('文件或目录不存在！')
       const files = fs.readdirSync(filePath, { withFileTypes: true }) as FileInfo[]
       // type 0为文件 1为目录 递归查询子目录
-      files.forEach(async (item, index) => {
+      files.forEach(async (item) => {
         if (item.isDirectory()) {
           item.type = 1
-          item.children = await this.readDir(path.join(filePath, item.name))
+          item.children = await this.readAllDir(path.join(filePath, item.name))
         } else {
           item.type = 0
         }
       })
+      // 对文件进行一个排序  文件夹放上面 文件放下面
+      this.FilesFormat(files)
+      resolve(files)
+    })
+  }
+  // 读取目录下所有文件
+  public static readDir(filePath: string): Promise<FileInfo[]> {
+    return new Promise((resolve, reject) => {
+      if (!fs.existsSync(filePath)) reject('文件或目录不存在！')
+      const files = fs.readdirSync(filePath, { withFileTypes: true }) as FileInfo[]
+      files.forEach((item) => (item.type = item.isDirectory() ? 1 : 0))
       // 对文件进行一个排序  文件夹放上面 文件放下面
       this.FilesFormat(files)
       resolve(files)

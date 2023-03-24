@@ -1,11 +1,11 @@
 import request from '../request'
 
 // 获取目录列表
-export const getScriptList = (): Promise<ResponseDataType<FileInfo[]>> => {
-  return request({ url: '/script/list', method: 'GET' })
+export const getScriptList = (params: { name: string }): Promise<ResponseDataType<FileInfo[]>> => {
+  return request({ url: '/script/list', method: 'GET', params })
 }
 // 创建目录
-export const createFile = (data: { name: string; type?: number }): Promise<ResponseDataType> => {
+export const createFile = (data: { name: string; type: number }): Promise<ResponseDataType> => {
   return request({ url: '/script/file', method: 'POST', data })
 }
 // 重命名文件
