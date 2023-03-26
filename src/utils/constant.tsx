@@ -8,9 +8,9 @@ export default {
     path: '/',
     routes: [
       {
-        key: 'task',
-        path: '/task',
-        name: '定时任务',
+        key: 'plan',
+        path: '/plan',
+        name: '任务计划',
         icon: <SmileFilled />
       },
       {
@@ -118,5 +118,7 @@ export default {
     { label: 'HTML', value: 'html' },
     { label: 'CSS', value: 'css' },
     { label: 'Less', value: 'less' }
-  ]
+  ],
+  // 正则
+  reg: {}
 }

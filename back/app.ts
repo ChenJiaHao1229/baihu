@@ -6,8 +6,9 @@ import initFile from './util/initFile'
 import bodyParser from 'body-parser'
 import initDb from './util/initDb'
 import User from './controllers/User'
-import Task from './controllers/Task'
+import Plan from './controllers/Plan'
 import Script from './controllers/Script'
+import Task from './controllers/Task'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()
@@ -48,6 +49,7 @@ import Script from './controllers/Script'
 
   // 加载其他路由
   app.use('/user', User(router))
+  app.use('/plan', Plan(router))
   app.use('/task', Task(router))
   app.use('/script', Script(router))
 

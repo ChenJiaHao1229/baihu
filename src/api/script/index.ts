@@ -1,6 +1,10 @@
 import request from '../request'
 
 // 获取目录列表
+export const getScriptAllList = (): Promise<ResponseDataType<FileInfo[]>> => {
+  return request({ url: '/script/alllist', method: 'GET' })
+}
+// 获取目录列表
 export const getScriptList = (params: { name: string }): Promise<ResponseDataType<FileInfo[]>> => {
   return request({ url: '/script/list', method: 'GET', params })
 }

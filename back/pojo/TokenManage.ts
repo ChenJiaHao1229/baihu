@@ -1,4 +1,4 @@
-import jwt, { Secret, SignOptions } from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken'
 import expressjwt, { IsRevokedCallback } from 'express-jwt'
 import constant from '../util/constant'
 

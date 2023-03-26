@@ -1,3 +1,4 @@
+import { PlanModel } from './../data/plan'
 import { TaskModel } from './../data/task'
 import Logger from './logger'
 import { SettingModel } from '../data/setting'
@@ -7,6 +8,7 @@ export default async () => {
   try {
     await AuthModel.sync()
     await SettingModel.sync()
+    await PlanModel.sync()
     await TaskModel.sync()
 
     // 初始化表格数据

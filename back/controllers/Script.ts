@@ -1,17 +1,25 @@
-import TaskServiceImpl from '../services/impl/TaskServiceImpl'
 import { NextFunction, Request, Response, Router } from 'express'
 import FileSystem from '../pojo/FileSystem'
 import constant from '../util/constant'
 import path from 'path'
 
 export default (router: Router) => {
+  // 获取目录列表 包括子目录
+  router.get('/alllist', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await FileSystem.readAllDir(constant.scriptPath)
+      res.send({ code: 200, status: true, message: '获取成功!', data })
+    } catch (error) {
+      next(error)
+    }
+  })
   // 获取目录列表
   router.get('/list', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await FileSystem.readDir(
         path.join(constant.scriptPath, req.query.name as string)
       )
-      res.send({ code: 200, status: true, message: '修改成功!', data })
+      res.send({ code: 200, status: true, message: '获取成功!', data })
     } catch (error) {
       next(error)
     }

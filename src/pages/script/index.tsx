@@ -9,6 +9,7 @@ import {
 import {
   ExclamationCircleFilled,
   FileTextOutlined,
+  FolderOpenOutlined,
   FolderOutlined,
   HomeOutlined
 } from '@ant-design/icons'
@@ -95,7 +96,7 @@ const Script: React.FC = () => {
                 else message.warning('请等待组件加载成功~')
               }}
             >
-              {item.type ? <FolderOutlined /> : <FileTextOutlined />}&nbsp;&nbsp;
+              {item.type ? <FolderOpenOutlined /> : <FileTextOutlined />}&nbsp;&nbsp;
               {item.name}
             </div>
           </Dropdown>

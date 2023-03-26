@@ -1,4 +1,3 @@
-import { AuthModel } from './../data/auth'
 import { Router, Request, Response, NextFunction } from 'express'
 import UserServiceImpl from '../services/impl/UserServiceImpl'
 
