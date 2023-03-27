@@ -16,7 +16,6 @@ const statusList = [
 ]
 const PlanTable: React.FC = () => {
   const [createOpen, setCreateOpen] = useState(false) // 创建/编辑弹窗控制
-  const [operation, setOperation] = useState<PlanInfo>() // 选中操作的数据
   const planTableRef = useRef<ActionType>() // 计划表格事件触发对象
 
   // 确认删除框
@@ -39,13 +38,15 @@ const PlanTable: React.FC = () => {
     {
       title: '计划名称',
       dataIndex: 'planName',
-      ellipsis: true
+      ellipsis: true,
+      formItemProps: { rules: [{ required: true, message: '此项为必填项' }] }
     },
     {
       title: '定时规则',
       dataIndex: 'cron',
       ellipsis: true,
-      hideInSearch: true
+      hideInSearch: true,
+      formItemProps: { rules: [{ required: true, message: '此项为必填项' }] }
     },
     {
       title: '状态',
@@ -54,6 +55,7 @@ const PlanTable: React.FC = () => {
       hideInSearch: true,
       filters: true,
       onFilter: true,
+      editable: false,
       tooltip: '可点击标签进行操作',
       valueEnum: {
         0: { text: '正常' },
@@ -76,6 +78,7 @@ const PlanTable: React.FC = () => {
       ellipsis: true,
       valueType: 'dateTime',
       sorter: true,
+      editable: false,
       renderFormItem: () => <RangePicker />
     },
     {
@@ -83,25 +86,19 @@ const PlanTable: React.FC = () => {
       dataIndex: 'lastRunTime',
       ellipsis: true,
       valueType: 'dateTime',
+      editable: false,
       hideInSearch: true
     },
     {
       title: '操作',
-      dataIndex: 'action',
       key: 'action',
       valueType: 'option',
       width: 140,
-      render: (dom, record) => [
-        <a key="stop">暂停</a>,
-        <a
-          key="edit"
-          onClick={() => {
-            setCreateOpen(true)
-            setOperation(record)
-          }}
-        >
+      render: (dom, record, index, action) => [
+        <a key="edit" onClick={() => action?.startEditable?.(record.id!)}>
           编辑
         </a>,
+        <a key="stop">暂停</a>,
         <a key="del" onClick={() => deleteConfirm(record)} style={{ color: 'red' }}>
           删除
         </a>
@@ -113,7 +110,7 @@ const PlanTable: React.FC = () => {
     try {
       setLoading(true)
       if (values) {
-        const res = operation ? await updatePlan(operation.id!, values) : await createPlan(values)
+        const res = await createPlan(values)
         if (res.status) {
           setCreateOpen(false)
           planTableRef.current?.reload()
@@ -146,24 +143,22 @@ const PlanTable: React.FC = () => {
           expandedRowRender: (record: PlanInfo) => <TaskTable record={record} />,
           fixed: true
         }}
+        editable={{
+          type: 'single',
+          actionRender: (row, config, defaultDoms) => [defaultDoms.save, defaultDoms.cancel],
+          onSave: (key, record) => updatePlan(record.id!, record)
+        }}
         dateFormatter="string"
         headerTitle="计划列表"
         toolBarRender={() => [
-          <Button
-            key="primary"
-            type="primary"
-            onClick={() => {
-              setCreateOpen(true)
-              setOperation(undefined)
-            }}
-          >
+          <Button key="primary" type="primary" onClick={() => setCreateOpen(true)}>
             创建计划
           </Button>
         ]}
         cardBordered
         options={{ setting: true }}
       />
-      <AddPlan open={createOpen} setOpen={setCreateOpen} data={operation} onOk={confirmCreate} />
+      <AddPlan open={createOpen} setOpen={setCreateOpen} onOk={confirmCreate} />
     </>
   )
 }

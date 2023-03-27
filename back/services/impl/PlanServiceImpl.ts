@@ -33,11 +33,8 @@ export default class PlanServiceImpl implements PlanService {
       content: data.rows
     }
   }
-  public async updatePlan(planId: string, planData: PlanInfo): Promise<ResponseDataType> {
-    return {
-      code: 200,
-      status: true
-    }
+  public async updatePlan(planId: string, planData: PlanInfo) {
+    await PlanModel.update(planData, { where: { id: planId } })
   }
   public async deletePlan(planId: string) {
     await PlanModel.destroy({ where: { id: planId } })

@@ -14,9 +14,9 @@ export default {
         icon: <SmileFilled />
       },
       {
-        key: 'envs',
-        path: '/envs',
-        name: '环境变量',
+        key: 'variable',
+        path: '/variable',
+        name: '变量管理',
         icon: <SmileFilled />
       },
       {
@@ -34,7 +34,7 @@ export default {
       {
         key: 'logs',
         path: '/logs',
-        name: '日志管理',
+        name: '查看日志',
         icon: <CrownFilled />
       },
       {

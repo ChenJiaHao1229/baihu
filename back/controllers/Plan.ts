@@ -26,7 +26,7 @@ export default (router: Router) => {
   // 修改任务
   router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await planServiceImpl.updatePlan(req.params.id, req.body)
+      await planServiceImpl.updatePlan(req.params.id, req.body)
       res.send({ code: 200, status: true, message: '修改成功 ' })
     } catch (error) {
       next(error)

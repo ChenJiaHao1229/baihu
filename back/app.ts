@@ -48,10 +48,10 @@ import Task from './controllers/Task'
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
   // 加载其他路由
-  app.use('/user', User(router))
-  app.use('/plan', Plan(router))
-  app.use('/task', Task(router))
-  app.use('/script', Script(router))
+  app.use('/user', User(Router()))
+  app.use('/plan', Plan(Router()))
+  app.use('/task', Task(Router()))
+  app.use('/script', Script(Router()))
 
   // 统一错误处理
   app.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {

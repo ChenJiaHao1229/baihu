@@ -86,6 +86,7 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
       options={false}
       dataSource={dataSource}
       pagination={false}
+      rowKey="id"
     />
   )
 }

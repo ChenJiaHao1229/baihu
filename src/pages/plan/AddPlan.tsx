@@ -1,17 +1,15 @@
 import { getScriptAllList } from '@/api/script'
-import constant from '@/utils/constant'
 import { FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons'
-import { Form, Input, message, Modal, Tree, TreeSelect } from 'antd'
+import { Form, Input, message, Modal, TreeSelect } from 'antd'
 import React, { useEffect, useState } from 'react'
 
 type AddPlanPropsType = {
   open: boolean
   setOpen: (open: boolean) => void
   onOk: (data: PlanInfo, setLoading: (loading: boolean) => void) => void
-  data?: PlanInfo
 }
 
-const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, data, onOk }) => {
+const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, onOk }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState<boolean>(false)
   const [treeData, setTreeData] = useState<FileInfo[]>([])
@@ -48,11 +46,11 @@ const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, data, onOk }) => {
     <Modal
       open={open}
       onCancel={() => setOpen(false)}
-      title={data ? '编辑计划' : '创建计划'}
+      title="创建计划"
       confirmLoading={loading}
       onOk={async () => {
         const values = await form.validateFields()
-        onOk({ ...data, ...values }, setLoading)
+        onOk(values, setLoading)
       }}
     >
       <Form form={form} labelCol={{ span: 4 }}>
