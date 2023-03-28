@@ -130,6 +130,19 @@ const PlanTable: React.FC = () => {
       success: res.status
     }
   }
+  // 修改计划
+  const handlePlan = (key: any, record: PlanInfo) => {
+    return new Promise(async (resolve, reject) => {
+      const res = await updatePlan(record.id!, record)
+      if (res.status) {
+        message.success(res.message)
+        resolve(res.status)
+      } else {
+        message.error(res.message)
+        reject()
+      }
+    })
+  }
 
   return (
     <>
@@ -146,7 +159,7 @@ const PlanTable: React.FC = () => {
         editable={{
           type: 'single',
           actionRender: (row, config, defaultDoms) => [defaultDoms.save, defaultDoms.cancel],
-          onSave: (key, record) => updatePlan(record.id!, record)
+          onSave: handlePlan
         }}
         dateFormatter="string"
         headerTitle="计划列表"
