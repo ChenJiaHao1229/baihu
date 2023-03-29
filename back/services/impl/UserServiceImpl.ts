@@ -4,7 +4,9 @@ import { Request } from 'express'
 import { tokenManage } from '../../pojo/TokenManage'
 import UserService from '../UserService'
 import getNetIp from '../../util/getNetIp'
+import { Service } from 'typedi'
 
+@Service()
 export default class UserServiceImpl implements UserService {
   // 登录方法
   public async login(
@@ -73,8 +75,7 @@ export default class UserServiceImpl implements UserService {
 
   // 获取主题数据
   public async getTheme(): Promise<any> {
-    const theme = await SettingModel.findOne({ where: { key: 'theme' } })
-    return theme
+    return await SettingModel.findOne({ where: { key: 'theme' } })
   }
 
   // 修改主题数据

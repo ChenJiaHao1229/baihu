@@ -247,7 +247,7 @@ const Script: React.FC = () => {
           type="primary"
           onClick={() => {
             updateFileContent({
-              name: getPath() + editFile?.name!,
+              name: editFile?.key!,
               content: editorRef.current?.getValue()!
             }).then((res) => {
               if (res.status) {

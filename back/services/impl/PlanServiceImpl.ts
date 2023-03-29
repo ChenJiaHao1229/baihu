@@ -4,7 +4,9 @@ import { Op } from 'sequelize'
 import PlanService from '../PlanService'
 import constant from '../../util/constant'
 import { PlanModel } from '../../data/plan'
+import { Service } from 'typedi'
 
+@Service()
 export default class PlanServiceImpl implements PlanService {
   public async getPlanList(search: PostSearchListType): Promise<PaginationType<PlanInfo>> {
     // 数据解构

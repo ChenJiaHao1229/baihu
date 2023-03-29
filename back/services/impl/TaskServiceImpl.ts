@@ -1,6 +1,8 @@
 import { TaskModel } from './../../data/task'
 import TaskService from '../TaskService'
+import { Service } from 'typedi'
 
+@Service()
 export default class TaskServiceImpl implements TaskService {
   public async getTaskList(search: TaskInfo): Promise<TaskInfo[]> {
     // 数据解构

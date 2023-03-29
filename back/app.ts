@@ -1,3 +1,4 @@
+import 'reflect-metadata' // typedi 依赖注入需要引入
 import express, { Request, Response, NextFunction, Router } from 'express'
 import config from './util/constant'
 import Logger from './util/logger'
@@ -12,7 +13,6 @@ import Task from './controllers/Task'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()
-  const router = Router()
 
   // 初始化工作
   await initFile()
