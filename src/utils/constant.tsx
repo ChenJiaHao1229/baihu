@@ -1,4 +1,5 @@
 import { ChromeFilled, CrownFilled, SmileFilled } from '@ant-design/icons'
+type ConstantFileInfoType = { [key: string]: { icon: JSX.Element; language: string } }
 export default {
   siteName: '白虎控制台',
   apiPrefix: '/api',
@@ -109,7 +110,7 @@ export default {
     { label: 'TypeScript', value: 'typescript' },
     { label: 'JavaScript', value: 'javascript' },
     { label: 'Java', value: 'java' },
-    { label: 'JSON', value: 'json' },
+    { label: 'Json', value: 'json' },
     { label: 'Yaml', value: 'yaml' },
     { label: 'SQL', value: 'sql' },
     { label: 'Shell', value: 'shell' },
@@ -120,5 +121,29 @@ export default {
     { label: 'Less', value: 'less' }
   ],
   // 正则
-  reg: {}
+  reg: {},
+  fileInfo: {
+    js: {
+      icon: <span className="bhIcon icon-js" style={{ color: '#f7cd45' }} />,
+      language: 'javascript'
+    },
+    ts: {
+      icon: <span className="bhIcon icon-ts" style={{ color: '#458ff7' }} />,
+      language: 'typescript'
+    },
+    html: {
+      icon: <span className="bhIcon icon-html" style={{ color: '#458ff7' }} />,
+      language: 'html'
+    },
+    css: {
+      icon: <span className="bhIcon icon-css" style={{ color: '#f7af45' }} />,
+      language: 'css'
+    },
+    json: {
+      icon: <span className="bhIcon icon-json" style={{ color: '#f7af45' }} />,
+      language: 'json'
+    }
+  } as ConstantFileInfoType,
+  // 脚本文件
+  scriptFileList: ['ts', 'js']
 }

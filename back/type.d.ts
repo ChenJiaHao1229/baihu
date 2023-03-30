@@ -82,6 +82,6 @@ type FileInfo = {
   isSocket(): boolean
   key: string
   name: string
-  type: number
+  type: number | string // 0为文件夹
   children?: FileInfo[]
 }

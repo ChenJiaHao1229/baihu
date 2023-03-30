@@ -1,4 +1,5 @@
 import { getScriptAllList } from '@/api/script'
+import constant from '@/utils/constant'
 import { FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { Form, Input, message, Modal, TreeSelect } from 'antd'
 import React, { useEffect, useState } from 'react'
@@ -32,14 +33,24 @@ const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, onOk }) => {
       item.key = `${path}/${item.name}`
       item.label = (
         <span>
-          {item.type ? <FolderOpenOutlined /> : <FileTextOutlined />}
+          {item.type === 0 ? (
+            <FolderOpenOutlined />
+          ) : (
+            constant.fileInfo[item.type]?.icon || <FileTextOutlined />
+          )}
           &nbsp; {item.name}
         </span>
       )
       // 判断是否有子文件
       if (item.children) item.children = formatTreeData(item.children, item.key)
     })
-    return data.filter((item) => !item.children || item.children.length !== 0)
+    return data.filter((item) => {
+      if (item.type === 0) {
+        return !item.children || item.children.length !== 0
+      } else {
+        return constant.scriptFileList.includes(item.type as string)
+      }
+    })
   }
 
   return (

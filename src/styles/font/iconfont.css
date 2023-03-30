@@ -1,0 +1,35 @@
+@font-face {
+  font-family: "bhIcon"; /* Project id 3985147 */
+  src: url('iconfont.woff2?t=1680160069043') format('woff2'),
+       url('iconfont.woff?t=1680160069043') format('woff'),
+       url('iconfont.ttf?t=1680160069043') format('truetype');
+}
+
+.bhIcon {
+  font-family: "bhIcon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-css:before {
+  content: "\e618";
+}
+
+.icon-html:before {
+  content: "\e6a0";
+}
+
+.icon-js:before {
+  content: "\e656";
+}
+
+.icon-json:before {
+  content: "\e7bd";
+}
+
+.icon-ts:before {
+  content: "\e664";
+}
+

@@ -14,7 +14,7 @@ import {
   HomeOutlined
 } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'
-import { Button, Modal, Dropdown, Menu, message, Select, Spin } from 'antd'
+import { Button, Modal, Dropdown, Menu, message, Select, Spin, Tooltip } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
@@ -82,26 +82,31 @@ const Script: React.FC = () => {
       ...menuItems.map((item) => ({
         key: item.key,
         label: (
-          <Dropdown
-            trigger={['contextMenu']}
-            // 下拉菜单
-            menu={getDropdownMenu(item)}
-          >
-            <div
-              className={styles.menuItem}
-              onDoubleClick={() => {
-                // 判断点击的是文件还是文件夹
-                if (item.type) setBreadcrumbItems([...breadcrumbItems, item])
-                else if (editorRef.current) openFile(item)
-                else message.warning('请等待组件加载成功~')
-              }}
+          <Tooltip title={item.name}>
+            <Dropdown
+              trigger={['contextMenu']}
+              // 下拉菜单
+              menu={getDropdownMenu(item)}
             >
-              {item.type ? <FolderOpenOutlined /> : <FileTextOutlined />}&nbsp;&nbsp;
-              {item.name}
-            </div>
-          </Dropdown>
-        ),
-        title: item.name
+              <div
+                className={`${styles.menuItem} ellipsis`}
+                onDoubleClick={() => {
+                  // 判断点击的是文件还是文件夹
+                  if (item.type === 0) setBreadcrumbItems([...breadcrumbItems, item])
+                  else if (editorRef.current) openFile(item)
+                  else message.warning('请等待组件加载成功~')
+                }}
+              >
+                {item.type === 0 ? (
+                  <FolderOpenOutlined />
+                ) : (
+                  constant.fileInfo[item.type]?.icon || <FileTextOutlined />
+                )}
+                &nbsp;&nbsp;{item.name}
+              </div>
+            </Dropdown>
+          </Tooltip>
+        )
       }))
     ]
   }
@@ -138,7 +143,7 @@ const Script: React.FC = () => {
             <div
               onClick={() => {
                 // 判断点击的是文件还是文件夹
-                if (file.type) setBreadcrumbItems([...breadcrumbItems, file])
+                if (file.type === 0) setBreadcrumbItems([...breadcrumbItems, file])
                 else if (editorRef.current) openFile(file)
                 else message.warning('请等待组件加载成功~')
               }}
@@ -228,7 +233,7 @@ const Script: React.FC = () => {
     }
     confirm({
       title: '确认删除？',
-      content: file.type !== 0 && file?.children?.length! > 0 && '子文件也会被删除',
+      content: file.type === 0 && '子文件也会被删除',
       icon: <ExclamationCircleFilled />,
       onOk() {
         const path = getPath()
@@ -294,6 +299,7 @@ const Script: React.FC = () => {
       if (res.status) {
         editorRef.current?.setValue(res.data)
         setEditFile({ ...file, content: res.data })
+        setLanguage(constant.fileInfo[file.type].language)
       } else message.error(res.message)
     })
   }
