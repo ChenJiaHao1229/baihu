@@ -1,7 +1,7 @@
 import { SettingModel } from '../../data/setting'
 import { AuthModel } from '../../data/auth'
 import { Request } from 'express'
-import { tokenManage } from '../../pojo/TokenManage'
+import { tokenManage } from '../../util/tokenManage'
 import UserService from '../UserService'
 import getNetIp from '../../util/getNetIp'
 import { Service } from 'typedi'

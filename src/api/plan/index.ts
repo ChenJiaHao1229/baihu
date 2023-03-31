@@ -7,8 +7,8 @@ export const getPlanList = (data: PostSearchListType): Promise<PlanListResponseT
   return request({ url: '/plan/list', method: 'POST', data })
 }
 
-export const updatePlan = (id: string, data: PlanInfo): Promise<PlanListResponseType> => {
-  return request({ url: `/plan/${id}`, method: 'PUT', data })
+export const updatePlan = (data: PlanInfo): Promise<PlanListResponseType> => {
+  return request({ url: `/plan`, method: 'PUT', data })
 }
 
 export const deletePlan = (id: string): Promise<PlanListResponseType> => {

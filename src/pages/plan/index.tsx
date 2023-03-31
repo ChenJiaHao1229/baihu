@@ -1,39 +1,17 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Button, DatePicker, message, Modal, Tag, Tooltip } from 'antd'
+import { Button, DatePicker, message, Switch } from 'antd'
 import { useState, useRef } from 'react'
 import { createPlan, deletePlan, getPlanList, updatePlan } from '@/api/plan'
 import AddPlan from './AddPlan'
 import TaskTable from './TaskTable'
 
 const { RangePicker } = DatePicker
-const { confirm } = Modal
 
-const statusList = [
-  { text: '正常', color: 'success', title: '点击运行' },
-  { text: '禁用', color: 'warning', title: '点击解禁' }
-]
 const PlanTable: React.FC = () => {
   const [createOpen, setCreateOpen] = useState(false) // 创建/编辑弹窗控制
   const planTableRef = useRef<ActionType>() // 计划表格事件触发对象
 
-  // 确认删除框
-  const deleteConfirm = (record: PlanInfo) => {
-    confirm({
-      title: '确定删除?',
-      icon: <ExclamationCircleFilled />,
-      okType: 'danger',
-      onOk() {
-        deletePlan(record.id!).then((res) => {
-          if (res.status) {
-            message.success(res.message)
-            planTableRef.current?.reload()
-          } else message.error(res.message)
-        })
-      }
-    })
-  }
   const columns: ProColumns<PlanInfo>[] = [
     {
       title: '计划名称',
@@ -50,27 +28,24 @@ const PlanTable: React.FC = () => {
     },
     {
       title: '状态',
-      dataIndex: 'status',
+      dataIndex: 'disable',
       ellipsis: true,
       hideInSearch: true,
       filters: true,
       onFilter: true,
       editable: false,
-      tooltip: '可点击标签进行操作',
       valueEnum: {
-        0: { text: '正常' },
-        1: { text: '禁用' }
+        false: { text: '启用' },
+        true: { text: '停用' }
       },
-      renderText: (text) => {
-        const status = text === 0 ? statusList[0] : statusList[1]
-        return (
-          <Tooltip title={status.title}>
-            <Tag color={status.color} className="pointer">
-              {status.text}
-            </Tag>
-          </Tooltip>
-        )
-      }
+      renderText: (text, record) => (
+        <Switch
+          checkedChildren="启用"
+          unCheckedChildren="停用"
+          defaultChecked={!text}
+          onChange={(checked) => updatePlan({ id: record.id, disable: checked })}
+        />
+      )
     },
     {
       title: '创建时间',
@@ -94,15 +69,19 @@ const PlanTable: React.FC = () => {
       key: 'action',
       valueType: 'option',
       width: 140,
-      render: (dom, record, index, action) => [
-        <a key="edit" onClick={() => action?.startEditable?.(record.id!)}>
-          编辑
-        </a>,
-        <a key="stop">暂停</a>,
-        <a key="del" onClick={() => deleteConfirm(record)} style={{ color: 'red' }}>
-          删除
-        </a>
-      ]
+      render: (dom, record, index, action) => {
+        return (
+          <div
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12PX' }}
+          >
+            <a key="edit" onClick={() => action?.startEditable?.(record.id!)}>
+              编辑
+            </a>
+            <a key="run">运行</a>
+            <a key="stop">暂停</a>
+          </div>
+        )
+      }
     }
   ]
   // 创建计划
@@ -131,17 +110,27 @@ const PlanTable: React.FC = () => {
     }
   }
   // 修改计划
-  const handlePlan = (key: any, record: PlanInfo) => {
-    return new Promise(async (resolve, reject) => {
-      const res = await updatePlan(record.id!, record)
-      if (res.status) {
-        message.success(res.message)
-        resolve(res.status)
-      } else {
-        message.error(res.message)
-        reject()
-      }
-    })
+  const handlePlan = async (key: any, record: PlanInfo) => {
+    const res = await updatePlan(record)
+    if (res.status) {
+      message.success(res.message)
+      return true
+    } else {
+      message.error(res.message)
+      Promise.reject()
+    }
+  }
+  // 确认删除框
+  const deleteConfirm = async (key: any, record: PlanInfo) => {
+    const res = await deletePlan(record.id!)
+    if (res.status) {
+      message.success(res.message)
+      planTableRef.current?.reload()
+      return true
+    } else {
+      message.error(res.message)
+      Promise.reject()
+    }
   }
 
   return (
@@ -157,9 +146,8 @@ const PlanTable: React.FC = () => {
           fixed: true
         }}
         editable={{
-          type: 'single',
-          actionRender: (row, config, defaultDoms) => [defaultDoms.save, defaultDoms.cancel],
-          onSave: handlePlan
+          onSave: handlePlan,
+          onDelete: deleteConfirm
         }}
         dateFormatter="string"
         headerTitle="计划列表"

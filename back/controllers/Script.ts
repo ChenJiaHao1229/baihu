@@ -1,6 +1,6 @@
 import { Container } from 'typedi'
 import { NextFunction, Request, Response, Router } from 'express'
-import FileSystem from '../pojo/FileSystem'
+import FileSystem from '../services/impl/FileServiceImpl'
 import constant from '../util/constant'
 import path from 'path'
 

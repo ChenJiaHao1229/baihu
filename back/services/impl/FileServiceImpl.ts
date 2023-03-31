@@ -2,6 +2,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import path from 'path'
 import { Service } from 'typedi'
+import FileSystem from '../FileService'
 
 // 枚举文件类型
 enum FileType {
@@ -15,7 +16,7 @@ enum FileType {
 
 // 文件操作对象
 @Service()
-export default class FileSystem {
+export default class FileSystemImpl implements FileSystem {
   data: string | object | unknown
   FileType = FileType
 
@@ -135,7 +136,7 @@ export default class FileSystem {
     return new Promise((resolve, reject) => {
       if (!fs.existsSync(filePath)) reject('文件或目录不存在！')
       if (type) {
-        fs.rmSync(filePath)
+        fs.unlinkSync(filePath)
       } else {
         // 遍历文件夹下文件 进行子文件删除
         const files = fs.readdirSync(filePath, { withFileTypes: true }) as FileInfo[]

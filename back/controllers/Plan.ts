@@ -25,9 +25,9 @@ export default (router: Router) => {
   })
 
   // 修改任务
-  router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await planService.updatePlan(req.params.id, req.body)
+      await planService.updatePlan(req.body)
       res.send({ code: 200, status: true, message: '修改成功 ' })
     } catch (error) {
       next(error)

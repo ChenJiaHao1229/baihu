@@ -2,7 +2,7 @@ import 'reflect-metadata' // typedi 依赖注入需要引入
 import express, { Request, Response, NextFunction, Router } from 'express'
 import config from './util/constant'
 import Logger from './util/logger'
-import { tokenManage } from './pojo/TokenManage'
+import { tokenManage } from './util/tokenManage'
 import initFile from './util/initFile'
 import bodyParser from 'body-parser'
 import initDb from './util/initDb'
@@ -10,6 +10,7 @@ import User from './controllers/User'
 import Plan from './controllers/Plan'
 import Script from './controllers/Script'
 import Task from './controllers/Task'
+import path from 'path'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()

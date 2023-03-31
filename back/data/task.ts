@@ -6,16 +6,18 @@ interface TaskInstance extends Model<TaskInfo, TaskInfo>, TaskInfo {}
 export const TaskModel = db.define<TaskInstance>('task', {
   id: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
+    unique: true,
     allowNull: true,
     autoIncrement: true
   },
   planId: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     allowNull: true
   },
   taskName: { type: DataTypes.STRING, allowNull: true },
-  path: { type: DataTypes.STRING, allowNull: true },
+  path: { type: DataTypes.STRING, allowNull: true, primaryKey: true },
   status: { type: DataTypes.INTEGER, defaultValue: 0 },
+  disable: { type: DataTypes.BOOLEAN, defaultValue: false },
   runTime: DataTypes.DATE
 })

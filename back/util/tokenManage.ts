@@ -1,6 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
 import expressjwt, { IsRevokedCallback } from 'express-jwt'
-import constant from '../util/constant'
+import constant from './constant'
 
 type payloadType = string | Buffer | object
 

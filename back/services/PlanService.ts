@@ -1,7 +1,7 @@
 export default interface PlanService {
   getPlanList: (pageData: PostSearchListType) => Promise<PaginationType<PlanInfo>>
 
-  updatePlan: (planId: string, planData: PlanInfo) => void
+  updatePlan: (planData: PlanInfo) => void
 
   deletePlan: (planId: string) => void
 

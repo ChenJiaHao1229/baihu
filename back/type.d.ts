@@ -49,8 +49,8 @@ type PlanInfo = {
   id?: string
   planName?: string // 任务名
   cron?: string // cron表达式
-  status?: number // 任务状态
   tasks?: string[] // 任务路径数组
+  disable?: boolean // 是否禁用
   createdAt?: string // 创建时间
   updatedAt?: string // 修改时间
   lastRunTime?: number // 上一次运行时间
@@ -62,6 +62,7 @@ type TaskInfo = {
   taskName?: string // 任务名称
   path?: string // 脚本路径
   status?: number // 脚本状态
+  disable?: boolean // 是否禁用
   runTime?: number // 运行时间
 }
 
@@ -82,6 +83,15 @@ type FileInfo = {
   isSocket(): boolean
   key: string
   name: string
-  type: number | string // 0为文件夹
+  type: 0 | string // 0为文件夹
   children?: FileInfo[]
+}
+
+// 执行脚本任务回调
+type TaskCallbacks<T = any, P = any> = {
+  onBefore?: (startTime: T) => Promise<void>
+  onStart?: (cp: P, startTime: T) => Promise<void>
+  onEnd?: (cp: P, endTime: T, diff: number) => Promise<void>
+  onLog?: (message: string) => Promise<void>
+  onError?: (message: string) => Promise<void>
 }

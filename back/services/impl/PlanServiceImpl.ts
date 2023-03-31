@@ -35,8 +35,8 @@ export default class PlanServiceImpl implements PlanService {
       content: data.rows
     }
   }
-  public async updatePlan(planId: string, planData: PlanInfo) {
-    await PlanModel.update(planData, { where: { id: planId } })
+  public async updatePlan(planData: PlanInfo) {
+    await PlanModel.update(planData, { where: { id: planData.id } })
   }
   public async deletePlan(planId: string) {
     await PlanModel.destroy({ where: { id: planId } })
@@ -51,7 +51,9 @@ export default class PlanServiceImpl implements PlanService {
       // 遍历创建脚本任务
       const taskResult: TaskInfo[] = []
       for (let i = 0; i < (tasks?.length || 0); i++) {
-        taskResult.push(await TaskModel.create({ planId: id, taskName: planName, path: tasks![i] }))
+        taskResult.push(
+          await TaskModel.create({ planId: id, taskName: `${planName}-${i + 1}`, path: tasks![i] })
+        )
       }
       return { ...createResult.dataValues, tasks: taskResult }
     } catch (error: any) {

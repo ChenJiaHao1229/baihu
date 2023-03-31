@@ -12,6 +12,6 @@ export const PlanModel = db.define<PlanInstance>('plan', {
   },
   planName: { type: DataTypes.STRING, unique: true, allowNull: true },
   cron: { type: DataTypes.STRING, allowNull: true },
-  status: { type: DataTypes.INTEGER, defaultValue: 0 },
+  disable: { type: DataTypes.BOOLEAN, defaultValue: false },
   lastRunTime: DataTypes.BIGINT
 })
