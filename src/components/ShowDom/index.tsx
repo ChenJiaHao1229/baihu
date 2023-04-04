@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 
 type ShowDomType = {
   show: boolean
-  children: React.ReactElement | string | number | null
+  children: ReactNode
 }
 // 第一次不渲染，后续不卸载
 const ShowDom: React.FC<ShowDomType> = ({ show, children }) => {

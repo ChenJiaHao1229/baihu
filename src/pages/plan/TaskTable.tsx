@@ -3,35 +3,60 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
+  FileTextOutlined,
+  FolderOpenOutlined,
   SyncOutlined
 } from '@ant-design/icons'
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components'
-import { Button, message, Tag, Tooltip } from 'antd'
+import { Badge, Button, message, Tag, Tooltip, TreeSelect } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import AddTask from './AddTask'
+import { getScriptAllList } from '@/api/script'
+import constant from '@/utils/constant'
+import { log } from 'console'
 
-type TaskTablePropsType = { record: PlanInfo }
+type TaskTablePropsType = { data: PlanInfo }
 
-const statusList = [
-  { text: '正常', color: 'success', icon: <CheckCircleOutlined />, title: '点击运行' },
-  { text: '运行中', color: 'processing', icon: <SyncOutlined spin />, title: '点击暂停' },
-  { text: '禁用', color: 'warning', icon: <ExclamationCircleOutlined />, title: '点击解禁' },
-  { text: '异常', color: 'error', icon: <CloseCircleOutlined />, title: '点击重新运行' }
+const statusList: {
+  text: string
+  status: 'success' | 'processing' | 'error' | 'default' | 'warning'
+}[] = [
+  { text: '正常', status: 'success' },
+  { text: '运行中', status: 'processing' },
+  { text: '禁用', status: 'warning' },
+  { text: '异常', status: 'error' }
 ]
-const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
+const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
   const [dataSource, setDataSource] = useState<TaskInfo[]>([])
   const [open, setOpen] = useState(false)
   const taskTableRef = useRef<ActionType>() // 任务表格事件触发对象
+  const [treeData, setTreeData] = useState<FileInfo[]>([])
 
   const columns: ProColumns<TaskInfo>[] = [
     { title: '任务名称', dataIndex: 'taskName', ellipsis: true },
-    { title: '文件路径', dataIndex: 'path', ellipsis: true },
+    {
+      title: '文件路径',
+      dataIndex: 'path',
+      ellipsis: true,
+      renderFormItem: (schema, { record }) => {
+        const tree = formatTreeData(treeData, '', record?.path)
+        return (
+          <TreeSelect
+            treeData={tree}
+            defaultValue={record?.path}
+            fieldNames={{ value: 'key' }}
+            dropdownMatchSelectWidth={400}
+          />
+        )
+      }
+    },
     {
       title: '运行状态',
       dataIndex: 'status',
       ellipsis: true,
       filters: true,
       onFilter: true,
+      editable: false,
       valueEnum: {
         0: { text: '正常' },
         1: { text: '运行中' },
@@ -40,18 +65,7 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
       },
       renderText: (text, record) => {
         const status = text || text === 0 ? statusList[text] : statusList[3]
-        return (
-          <Tooltip title={status.title}>
-            <Tag
-              icon={status.icon}
-              color={status.color}
-              className="pointer"
-              onClick={() => clickTag(record)}
-            >
-              {status.text}
-            </Tag>
-          </Tooltip>
-        )
+        return <Badge status={status.status} text={status.text} />
       }
     },
     {
@@ -59,13 +73,15 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
       dataIndex: 'createdAt',
       ellipsis: true,
       valueType: 'dateTime',
+      editable: false,
       sorter: true
     },
     {
       title: '上次运行',
       dataIndex: 'runTime',
       ellipsis: true,
-      valueType: 'dateTime'
+      valueType: 'dateTime',
+      editable: false
     },
     {
       title: () => {
@@ -91,19 +107,54 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
       ]
     }
   ]
-  // 点击tag
-  const clickTag = (task: TaskInfo) => {
-    switch (task.status) {
-      case 0:
-        runTask({ id: task.id })
-        break
-    }
+
+  useEffect(() => {
+    getScriptAllList().then((res) => {
+      if (res.status) setTreeData(res.data || [])
+      else message.error(res.message)
+    })
+  }, [])
+
+  // 处理数据
+  const formatTreeData = (
+    file: (FileInfo & { label?: React.ReactNode; selectable?: boolean })[],
+    path: string = '',
+    key?: string
+  ) => {
+    file.forEach((item) => {
+      item.key = `${path}/${item.name}`
+      item.label = (
+        <span>
+          {item.type === 0 ? (
+            <FolderOpenOutlined />
+          ) : (
+            constant.fileInfo[item.type]?.icon || <FileTextOutlined />
+          )}
+          &nbsp; {item.name}
+        </span>
+      )
+      item.selectable = item.type !== 0
+      // 判断是否有子文件
+      if (item.children) item.children = formatTreeData(item.children, item.key)
+    })
+    // 过滤掉非脚本文件  已经添加了的脚本文件 以及自身不过滤
+    return file.filter((item) => {
+      if (item.type === 0) {
+        return !item.children || item.children.length !== 0
+      } else {
+        return (
+          constant.scriptFileList.includes(item.type as string) &&
+          (item.key === key || !dataSource.map((item) => item.path!).includes(item.key))
+        )
+      }
+    })
   }
+
   // 确认添加
   const confirmAdd = async (task: TaskInfo, setLoading: (loading: boolean) => void) => {
     try {
       setLoading(true)
-      const res = await addTask({ ...task, planId: record.id })
+      const res = await addTask({ ...task, planId: data.id })
       if (res.status) {
         setOpen(false)
         taskTableRef.current?.reload()
@@ -146,7 +197,7 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
         pagination={false}
         onDataSourceChange={setDataSource}
         request={async (params: any, sorter: any, filter: any) => {
-          const res = await getTaskList({ planId: record.id! })
+          const res = await getTaskList({ planId: data.id! })
           return {
             data: res.data,
             success: res.status
@@ -160,8 +211,8 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ record }) => {
       <AddTask
         open={open}
         setOpen={setOpen}
-        data={dataSource.map((item) => item.path!)}
         onOk={confirmAdd}
+        treeData={formatTreeData(treeData)}
       />
     </>
   )

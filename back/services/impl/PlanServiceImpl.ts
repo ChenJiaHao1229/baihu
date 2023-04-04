@@ -36,7 +36,14 @@ export default class PlanServiceImpl implements PlanService {
     }
   }
   public async updatePlan(planData: PlanInfo) {
-    await PlanModel.update(planData, { where: { id: planData.id } })
+    await PlanModel.update(
+      removeNullValue({
+        planName: planData.planName,
+        cron: planData.cron,
+        disable: planData.disable
+      }),
+      { where: { id: planData.id } }
+    )
   }
   public async deletePlan(planId: string) {
     await PlanModel.destroy({ where: { id: planId } })

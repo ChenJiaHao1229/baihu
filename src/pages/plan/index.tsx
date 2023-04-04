@@ -142,7 +142,7 @@ const PlanTable: React.FC = () => {
         actionRef={planTableRef}
         pagination={{ defaultPageSize: 10, showSizeChanger: true }}
         expandable={{
-          expandedRowRender: (record: PlanInfo) => <TaskTable record={record} />,
+          expandedRowRender: (record: PlanInfo) => <TaskTable data={record} />,
           fixed: true
         }}
         editable={{

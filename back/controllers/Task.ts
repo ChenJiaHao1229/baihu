@@ -44,6 +44,15 @@ export default (router: Router) => {
       next(error)
     }
   })
+  // 修改任务
+  router.put('/', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await taskService.updateTask(req.body)
+      res.send({ code: 200, status: true, message: '修改成功' })
+    } catch (error) {
+      next(error)
+    }
+  })
 
   return router
 }

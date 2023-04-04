@@ -8,4 +8,6 @@ export default interface TaskService {
   addTask: (data: TaskInfo) => Promise<TaskInfo>
 
   deleteTask: (taskId: string) => void
+
+  updateTask: (taskInfo: TaskInfo) => void
 }

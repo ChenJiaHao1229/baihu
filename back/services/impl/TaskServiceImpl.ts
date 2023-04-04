@@ -5,6 +5,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import path from 'path'
 import constant from '../../util/constant'
 import dayjs from 'dayjs'
+import { removeNullValue } from '../../util'
 
 @Service()
 export default class TaskServiceImpl implements TaskService {
@@ -58,6 +59,11 @@ export default class TaskServiceImpl implements TaskService {
 
   public async deleteTask(taskId: string) {
     await TaskModel.destroy({ where: { id: taskId } })
+  }
+  public async updateTask(taskInfo: TaskInfo) {
+    await TaskModel.update(removeNullValue({ taskName: taskInfo.taskName, path: taskInfo.path }), {
+      where: { id: taskInfo.id }
+    })
   }
 
   private taskCallBacks(): TaskCallbacks<dayjs.Dayjs, ChildProcessWithoutNullStreams> {

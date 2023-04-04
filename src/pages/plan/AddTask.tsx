@@ -6,53 +6,18 @@ import React, { useEffect, useState } from 'react'
 
 type AddTaskPropsType = {
   open: boolean
-  data: string[]
+  treeData: FileInfo[]
   setOpen: (open: boolean) => void
   onOk: (data: PlanInfo, setLoading: (loading: boolean) => void) => void
 }
 
-const AddTask: React.FC<AddTaskPropsType> = ({ open, setOpen, onOk, data }) => {
+const AddTask: React.FC<AddTaskPropsType> = ({ open, setOpen, onOk, treeData }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState<boolean>(false)
-  const [treeData, setTreeData] = useState<FileInfo[]>([])
 
   useEffect(() => {
-    if (open) {
-      form.resetFields()
-      getScriptAllList().then((res) => {
-        if (res.status)
-          // 对数据进行处理
-          setTreeData(formatTreeData(res.data!))
-        else message.error(res.message)
-      })
-    }
+    if (open) form.resetFields()
   }, [open])
-
-  // 处理数据
-  const formatTreeData = (file: (FileInfo & { label?: React.ReactNode })[], path: string = '') => {
-    file.forEach((item) => {
-      item.key = `${path}/${item.name}`
-      item.label = (
-        <span>
-          {item.type === 0 ? (
-            <FolderOpenOutlined />
-          ) : (
-            constant.fileInfo[item.type]?.icon || <FileTextOutlined />
-          )}
-          &nbsp; {item.name}
-        </span>
-      )
-      // 判断是否有子文件
-      if (item.children) item.children = formatTreeData(item.children, item.key)
-    })
-    return file.filter((item) => {
-      if (item.type === 0) {
-        return !item.children || item.children.length !== 0
-      } else {
-        return constant.scriptFileList.includes(item.type as string) && !data.includes(item.key)
-      }
-    })
-  }
 
   return (
     <Modal
@@ -71,12 +36,10 @@ const AddTask: React.FC<AddTaskPropsType> = ({ open, setOpen, onOk, data }) => {
         </Form.Item>
         <Form.Item label="运行脚本" name="path" rules={[{ required: true }]}>
           <TreeSelect
-            allowClear
-            treeLine
-            treeIcon
             treeData={treeData}
             placeholder="请选择脚本"
             fieldNames={{ value: 'key' }}
+            showSearch={true}
             filterTreeNode={(inputValue: string, treeNode: any) =>
               treeNode.key.indexOf(inputValue) !== -1
             }
