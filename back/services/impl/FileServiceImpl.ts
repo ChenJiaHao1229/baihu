@@ -3,6 +3,7 @@ import yaml from 'js-yaml'
 import path from 'path'
 import { Service } from 'typedi'
 import FileSystem from '../FileService'
+import { getFileType } from '../../util'
 
 // 枚举文件类型
 enum FileType {
@@ -71,10 +72,7 @@ export default class FileSystemImpl implements FileSystem {
         if (item.isDirectory()) {
           item.type = 0
           item.children = await this.readAllDir(path.join(filePath, item.name))
-        } else {
-          const sub = item.name.lastIndexOf('.')
-          item.type = sub !== -1 ? item.name.toLowerCase().substring(sub + 1) : 'unknown'
-        }
+        } else item.type = getFileType(item.name)
       })
       // 对文件进行一个排序  文件夹放上面 文件放下面
       this.FilesFormat(files)
@@ -87,12 +85,8 @@ export default class FileSystemImpl implements FileSystem {
       if (!fs.existsSync(filePath)) reject('文件或目录不存在！')
       const files = fs.readdirSync(filePath, { withFileTypes: true }) as FileInfo[]
       files.forEach((item) => {
-        if (item.isDirectory()) {
-          item.type = 0
-        } else {
-          const sub = item.name.lastIndexOf('.')
-          item.type = sub !== -1 ? item.name.toLowerCase().substring(sub + 1) : 'unknown'
-        }
+        if (item.isDirectory()) item.type = 0
+        else item.type = getFileType(item.name)
       })
       // 对文件进行一个排序  文件夹放上面 文件放下面
       this.FilesFormat(files)
@@ -113,11 +107,16 @@ export default class FileSystemImpl implements FileSystem {
   }
 
   // 创建文件
-  public make(filePath: string, type: number = 0) {
+  public make(filePath: string, type: number = 0, data: string = '') {
     return new Promise<boolean>((resolve, reject) => {
+      console.log(filePath, type, data)
       if (fs.existsSync(filePath)) reject('文件或目录已存在！')
-      if (type) fs.writeFileSync(filePath, '')
-      else fs.mkdirSync(filePath)
+      if (type) {
+        const dirname = path.dirname(filePath)
+        // 判断是否有文件夹 没有先创建对应文件夹
+        if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true })
+        fs.writeFileSync(filePath, data)
+      } else fs.mkdirSync(filePath, { recursive: true })
       resolve(true)
     })
   }
@@ -147,5 +146,9 @@ export default class FileSystemImpl implements FileSystem {
       }
       resolve(true)
     })
+  }
+
+  public async appendFile(filePath: string, data: string) {
+    fs.appendFileSync(filePath, data)
   }
 }

@@ -11,19 +11,16 @@ const logPath = path.join(dataPath, 'log')
 const scriptPath = path.join(dataPath, 'script')
 const authPath = path.join(configPath, 'auth.json')
 const themePath = path.join(configPath, 'theme.json')
-
 const authError = '用户名或者密码错误，请重新认证！'
 const loginFaild = '请先登录!'
-const logs = {
-  level: process.env.LOG_LEVEL || 'silly'
-}
-
+const logs = { level: process.env.LOG_LEVEL || 'silly' }
 const sorter = { ascend: 'ASC', descend: 'DESC' }
 // 过滤的文件
 const filesFilter = ['node_modules', 'package.json']
-
 // 校验白名单
 const whitePath = ['/user/login']
+const runScript = { js: 'node', ts: 'ts-node' } as { [keyName: string]: string }
+
 export default {
   BH_Secret,
   BH_ExpiresIn,
@@ -41,5 +38,6 @@ export default {
   templatePath,
   logs,
   sorter,
-  filesFilter
+  filesFilter,
+  runScript
 }

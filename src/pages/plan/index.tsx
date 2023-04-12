@@ -5,6 +5,7 @@ import { useState, useRef } from 'react'
 import { createPlan, deletePlan, getPlanList, updatePlan } from '@/api/plan'
 import AddPlan from './AddPlan'
 import TaskTable from './TaskTable'
+import Cron from 'react-cron-ts'
 
 const { RangePicker } = DatePicker
 
@@ -24,7 +25,8 @@ const PlanTable: React.FC = () => {
       dataIndex: 'cron',
       ellipsis: true,
       hideInSearch: true,
-      formItemProps: { rules: [{ required: true, message: '此项为必填项' }] }
+      formItemProps: { rules: [{ required: true, message: '此项为必填项' }] },
+      renderFormItem: () => <Cron />
     },
     {
       title: '状态',
@@ -43,7 +45,7 @@ const PlanTable: React.FC = () => {
           checkedChildren="启用"
           unCheckedChildren="停用"
           defaultChecked={!text}
-          onChange={(checked) => updatePlan({ id: record.id, disable: checked })}
+          onChange={(checked) => updatePlan({ id: record.id, disable: !checked })}
         />
       )
     },
@@ -142,7 +144,8 @@ const PlanTable: React.FC = () => {
         actionRef={planTableRef}
         pagination={{ defaultPageSize: 10, showSizeChanger: true }}
         expandable={{
-          expandedRowRender: (record: PlanInfo) => <TaskTable data={record} />,
+          expandedRowRender: (record: PlanInfo, index: number, indent: number, expanded: boolean) =>
+            expanded && <TaskTable data={record} />,
           fixed: true
         }}
         editable={{

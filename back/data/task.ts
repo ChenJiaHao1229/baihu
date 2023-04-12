@@ -1,5 +1,6 @@
 import db from '.'
 import { DataTypes, Model } from 'sequelize'
+import { PlanModel } from './plan'
 
 interface TaskInstance extends Model<TaskInfo, TaskInfo>, TaskInfo {}
 
@@ -15,9 +16,9 @@ export const TaskModel = db.define<TaskInstance>('task', {
     primaryKey: true,
     allowNull: true
   },
-  taskName: { type: DataTypes.STRING, allowNull: true },
+  taskName: { type: DataTypes.STRING, allowNull: true, unique: true },
   path: { type: DataTypes.STRING, allowNull: true, primaryKey: true },
-  status: { type: DataTypes.INTEGER, defaultValue: 0 },
+  status: { type: DataTypes.INTEGER, defaultValue: 1 },
   disable: { type: DataTypes.BOOLEAN, defaultValue: false },
   runTime: DataTypes.DATE
 })

@@ -1,30 +1,22 @@
 import { addTask, deleteTask, getTaskList, runTask, updateTask } from '@/api/task'
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  FileTextOutlined,
-  FolderOpenOutlined,
-  SyncOutlined
-} from '@ant-design/icons'
+import { FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components'
-import { Badge, Button, message, Tag, Tooltip, TreeSelect } from 'antd'
+import { Badge, Button, message, Switch, Tag, Tooltip, TreeSelect } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import AddTask from './AddTask'
 import { getScriptAllList } from '@/api/script'
 import constant from '@/utils/constant'
-import { log } from 'console'
 
 type TaskTablePropsType = { data: PlanInfo }
 
 const statusList: {
   text: string
-  status: 'success' | 'processing' | 'error' | 'default' | 'warning'
+  status: 'success' | 'processing' | 'warning' | 'error'
 }[] = [
+  { text: '禁用', status: 'warning' },
   { text: '正常', status: 'success' },
   { text: '运行中', status: 'processing' },
-  { text: '禁用', status: 'warning' },
-  { text: '异常', status: 'error' }
+  { text: '错误', status: 'error' }
 ]
 const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
   const [dataSource, setDataSource] = useState<TaskInfo[]>([])
@@ -51,37 +43,22 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       }
     },
     {
-      title: '运行状态',
-      dataIndex: 'status',
+      title: '任务状态',
       ellipsis: true,
-      filters: true,
-      onFilter: true,
-      editable: false,
-      valueEnum: {
-        0: { text: '正常' },
-        1: { text: '运行中' },
-        2: { text: '禁用' },
-        3: { text: '异常' }
-      },
-      renderText: (text, record) => {
-        const status = text || text === 0 ? statusList[text] : statusList[3]
-        return <Badge status={status.status} text={status.text} />
-      }
+      renderText: (text, record) => (
+        <Badge status={statusList[record.status!].status} text={statusList[record.status!].text} />
+      ),
+      renderFormItem: (schema, { record }) => (
+        <Switch checkedChildren="启用" unCheckedChildren="停用" defaultChecked={!record?.disable} />
+      )
     },
     {
-      title: '创建时间',
-      dataIndex: 'createdAt',
+      title: '运行时间',
+      dataIndex: 'runTime',
       ellipsis: true,
       valueType: 'dateTime',
       editable: false,
       sorter: true
-    },
-    {
-      title: '上次运行',
-      dataIndex: 'runTime',
-      ellipsis: true,
-      valueType: 'dateTime',
-      editable: false
     },
     {
       title: () => {
@@ -102,17 +79,31 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
         <a key="edit" onClick={() => action?.startEditable?.(record.id!)}>
           编辑
         </a>,
-        record.status !== 2 && <a key="forbid">禁用</a>,
-        record.status === 2 && <a key="unlock">解禁</a>
+        record.status === 2 ? (
+          <a key="stop">暂停</a>
+        ) : (
+          <a
+            key="run"
+            onClick={() => {
+              runTask(record.id!).then(() => {
+                setDataSource(
+                  dataSource.map((item) => {
+                    if (item.id === record.id) return { ...record, status: 2 }
+                    else return item
+                  })
+                )
+              })
+            }}
+          >
+            运行
+          </a>
+        )
       ]
     }
   ]
 
   useEffect(() => {
-    getScriptAllList().then((res) => {
-      if (res.status) setTreeData(res.data || [])
-      else message.error(res.message)
-    })
+    getScriptAllList().then((res) => setTreeData(res.data || []))
   }, [])
 
   // 处理数据
@@ -164,10 +155,18 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
     }
   }
   // 修改计划
-  const handlerTask = async (key: any, record: PlanInfo) => {
-    const res = await updateTask(record)
+  const handlerTask = async (key: any, record: TaskInfo) => {
+    const res = await updateTask({
+      id: record.id,
+      taskName: record.taskName,
+      path: record.path,
+      disable: !record.disable
+    })
     if (res.status) {
       message.success(res.message)
+      console.log(record)
+
+      record.disable = !record.disable
       return true
     } else {
       message.error(res.message)
@@ -175,7 +174,7 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
     }
   }
   // 确认删除框
-  const deleteConfirm = async (key: any, record: PlanInfo) => {
+  const deleteConfirm = async (key: any, record: TaskInfo) => {
     const res = await deleteTask(record.id!)
     if (res.status) {
       message.success(res.message)
@@ -195,9 +194,10 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
         options={false}
         actionRef={taskTableRef}
         pagination={false}
-        onDataSourceChange={setDataSource}
+        dataSource={dataSource}
         request={async (params: any, sorter: any, filter: any) => {
           const res = await getTaskList({ planId: data.id! })
+          setDataSource(res.data || [])
           return {
             data: res.data,
             success: res.status

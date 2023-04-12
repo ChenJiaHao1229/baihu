@@ -11,6 +11,10 @@ export default async () => {
     await PlanModel.sync()
     await TaskModel.sync()
 
+    // 建立关联关系
+    PlanModel.hasMany(TaskModel, { foreignKey: 'planId' })
+    TaskModel.belongsTo(PlanModel, { foreignKey: 'planId' })
+
     // 初始化表格数据
     if ((await AuthModel.count()) === 0) {
       // 账号密码初始化为 admin

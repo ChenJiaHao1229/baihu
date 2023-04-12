@@ -12,7 +12,8 @@ export default interface FileSystem {
   writeFile: (filePath: string, data: string | object, fileType: FileType) => Promise<boolean>
   readAllDir: (filePath: string) => Promise<FileInfo[]>
   readDir: (filePath: string) => Promise<FileInfo[]>
-  make: (filePath: string, type: number) => void
+  make: (filePath: string, type: number, data: string) => void
   rename: (oldFilePath: string, newOldFilePath: string) => Promise<boolean>
   rm: (filePath: string, type: number | boolean) => Promise<boolean>
+  appendFile: (filePath: string, data: string) => Promise<void>
 }

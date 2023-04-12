@@ -49,11 +49,11 @@ type PlanInfo = {
   id?: string
   planName?: string // 任务名
   cron?: string // cron表达式
-  tasks?: string[] // 任务路径数组
   disable?: boolean // 是否禁用
+  lastRunTime?: number // 上一次运行时间
   createdAt?: string // 创建时间
   updatedAt?: string // 修改时间
-  lastRunTime?: number // 上一次运行时间
+  tasks?: TaskInfo[] // 管理任务列表
 }
 // 任务类型
 type TaskInfo = {
@@ -61,9 +61,10 @@ type TaskInfo = {
   planId?: string // 任务id
   taskName?: string // 任务名称
   path?: string // 脚本路径
-  status?: number // 脚本状态
+  status?: number // 状态
   disable?: boolean // 是否禁用
   runTime?: number // 运行时间
+  plan?: PlanInfo // 关联计划
 }
 
 // 修改密码
@@ -90,8 +91,8 @@ type FileInfo = {
 // 执行脚本任务回调
 type TaskCallbacks<T = any, P = any> = {
   onBefore?: (startTime: T) => Promise<void>
-  onStart?: (cp: P, startTime: T) => Promise<void>
-  onEnd?: (cp: P, endTime: T, diff: number) => Promise<void>
+  onStart?: (cp: P) => Promise<void>
+  onEnd?: (endTime: T, diff: number) => Promise<void>
   onLog?: (message: string) => Promise<void>
   onError?: (message: string) => Promise<void>
 }

@@ -1,5 +1,5 @@
 import { TaskModel } from './../../data/task'
-import { removeNullValue } from './../../util/index'
+import { removeFalseValue, removeNullValue } from './../../util/index'
 import { Op } from 'sequelize'
 import PlanService from '../PlanService'
 import constant from '../../util/constant'
@@ -16,7 +16,7 @@ export default class PlanServiceImpl implements PlanService {
       filter: { status }
     } = search
     const data = await PlanModel.findAndCountAll(
-      removeNullValue({
+      removeFalseValue({
         limit: pageSize * 1,
         offset: pageSize * (current - 1),
         // 过滤条件
@@ -64,7 +64,7 @@ export default class PlanServiceImpl implements PlanService {
       }
       return { ...createResult.dataValues, tasks: taskResult }
     } catch (error: any) {
-      if (error.name === 'SequelizeUniqueConstraintError') throw '任务名重复'
+      if (error.name === 'SequelizeUniqueConstraintError') throw '计划名重复'
       throw error
     }
   }

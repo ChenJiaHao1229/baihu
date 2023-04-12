@@ -3,6 +3,7 @@ import constant from '@/utils/constant'
 import { FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { Form, Input, message, Modal, TreeSelect } from 'antd'
 import React, { useEffect, useState } from 'react'
+import Cron from 'react-cron-ts'
 
 type AddPlanPropsType = {
   open: boolean
@@ -68,8 +69,13 @@ const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, onOk }) => {
         <Form.Item label="计划名" name="planName" rules={[{ required: true }, { max: 50 }]}>
           <Input placeholder="请输入计划名" />
         </Form.Item>
-        <Form.Item label="定时规则" name="cron" rules={[{ required: true }, { max: 255 }]}>
-          <Input placeholder="请输入Cron表达式" />
+        <Form.Item
+          label="定时规则"
+          name="cron"
+          rules={[{ required: true }, { max: 255 }]}
+          initialValue="0 0 0 * * ? *"
+        >
+          <Cron inputProps={{ placeholder: '请编辑' }} height={400} />
         </Form.Item>
         <Form.Item label="运行脚本" name="tasks" rules={[{ required: true }]}>
           <TreeSelect

@@ -16,9 +16,9 @@ export default (router: Router) => {
   })
 
   // 运行任务
-  router.put('/run', async (req: Request, res: Response, next: NextFunction) => {
+  router.post('/run/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await taskService.runTask(req.body.id)
+      await taskService.runTask(req.params.id)
       res.send({})
     } catch (error) {
       next(error)

@@ -10,7 +10,6 @@ import User from './controllers/User'
 import Plan from './controllers/Plan'
 import Script from './controllers/Script'
 import Task from './controllers/Task'
-import path from 'path'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()

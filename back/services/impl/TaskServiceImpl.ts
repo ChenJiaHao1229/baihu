@@ -5,10 +5,16 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import path from 'path'
 import constant from '../../util/constant'
 import dayjs from 'dayjs'
-import { removeNullValue } from '../../util'
+import { getFileType, removeNullValue } from '../../util'
+import { PlanModel } from '../../data/plan'
+import FileSystemImpl from './FileServiceImpl'
 
 @Service()
 export default class TaskServiceImpl implements TaskService {
+  private taskMap = new Map<string, ChildProcessWithoutNullStreams>()
+
+  constructor(private fileSystem: FileSystemImpl) {}
+
   public async stopTask(id: string) {}
   public async getTaskList(search: TaskInfo): Promise<TaskInfo[]> {
     // 数据解构
@@ -19,32 +25,38 @@ export default class TaskServiceImpl implements TaskService {
 
   public async runTask(id: string) {
     try {
-      const data = await TaskModel.findOne({ where: { id } })
+      const data = await TaskModel.findOne({
+        where: { id },
+        include: [{ model: PlanModel }]
+      })
       if (data) {
         const { path: scriptPath } = data
-        const child = spawn(`node ${path.join(constant.scriptPath, scriptPath || '')}`, {
-          shell: true
-        })
-
-        child.stdout.on('data', (chunk) => {
-          console.log(1, chunk.toString())
-          child.pid && process.kill(child.pid, 14)
-        })
-        child.stderr.on('data', (chunk) => {
-          console.log(11, chunk.toString())
-        })
-        child.on('error', (err) => {
-          console.log(2, err)
-        })
-        child.on('close', (code, signal) => {
-          console.log(3, code, signal)
-        })
-        child.on('exit', (code, signal) => {
-          console.log(4, code, signal)
-        })
+        const type = getFileType(scriptPath!)
+        // 判断是否支持该类型文件
+        if (!constant.runScript[type]) throw '该文件无法运行'
+        const startTime = dayjs()
+        const taskCallBacks = this.taskCallBacks(data)
+        // 捕获线程运行报错
+        try {
+          await taskCallBacks.onBefore?.(startTime)
+          const child = spawn('npx.cmd', [
+            constant.runScript[type],
+            path.join(constant.scriptPath, scriptPath || '')
+          ])
+          await taskCallBacks.onStart?.(child)
+          // 子线程事件监听
+          child.stdout.on('data', async (chunk) => await taskCallBacks.onLog?.(chunk.toString()))
+          child.stderr.on('data', async (chunk) => await taskCallBacks.onError?.(chunk.toString()))
+          child.on('close', async () => {
+            const endTime = dayjs()
+            await taskCallBacks.onEnd?.(endTime, endTime.diff(startTime, 'seconds'))
+          })
+        } catch (error) {
+          await taskCallBacks.onError?.(JSON.stringify(error))
+        }
       } else throw '任务不存在'
     } catch (error) {
-      console.log(2222, error)
+      throw error
     }
   }
 
@@ -61,18 +73,60 @@ export default class TaskServiceImpl implements TaskService {
     await TaskModel.destroy({ where: { id: taskId } })
   }
   public async updateTask(taskInfo: TaskInfo) {
-    await TaskModel.update(removeNullValue({ taskName: taskInfo.taskName, path: taskInfo.path }), {
-      where: { id: taskInfo.id }
-    })
+    try {
+      const { taskName, path, disable, running, runTime } = taskInfo
+      console.log(taskName, path, disable, running, runTime)
+
+      await TaskModel.update(removeNullValue({ taskName, path, disable, running, runTime }), {
+        where: { id: taskInfo.id }
+      })
+    } catch (error: any) {
+      if (error.name === 'SequelizeUniqueConstraintError') throw '任务名重复'
+      throw error
+    }
   }
 
-  private taskCallBacks(): TaskCallbacks<dayjs.Dayjs, ChildProcessWithoutNullStreams> {
+  private taskCallBacks(
+    task: TaskInfo
+  ): TaskCallbacks<dayjs.Dayjs, ChildProcessWithoutNullStreams> {
+    let logPath = ''
     return {
-      onBefore: async (startTime) => {},
-      onStart: async (cp, startTime) => {},
-      onEnd: async (cp, endTime, diff) => {},
-      onError: async (message: string) => {},
-      onLog: async (message: string) => {}
+      onBefore: async (startTime) => {
+        const logTime = startTime.format('YYYY-MM-DD-HH-mm-ss')
+        logPath = path.join(
+          constant.logPath,
+          `${task.plan?.planName}/${task.taskName}/${logTime}.log`
+        )
+        await this.fileSystem.make(
+          logPath,
+          1,
+          `## 开始执行... ${startTime.format('YYYY-MM-DD HH:mm:ss')}\n`
+        )
+      },
+      onStart: async (child) => {
+        // 判断该任务是否在运行
+        if (this.taskMap.has(task.id!)) this.taskMap.get(task.id!)?.kill()
+        this.taskMap.set(task.id!, child)
+        task.status = 2
+        await TaskModel.update({ status: 2 }, { where: { id: task.id } })
+      },
+      onEnd: async (endTime, diff) => {
+        this.fileSystem.appendFile(
+          logPath,
+          `\n## 执行结束... ${endTime.format('YYYY-MM-DD HH:mm:ss')}  耗时 ${diff} 秒`
+        )
+        this.taskMap.delete(task.id!)
+        // 正常运行结束则修改
+        if (task.status === 2) await TaskModel.update({ status: 1 }, { where: { id: task.id } })
+      },
+      onError: async (message: string) => {
+        task.status = 3
+        await TaskModel.update({ status: 3 }, { where: { id: task.id } })
+        this.fileSystem.appendFile(logPath, `\n${message}`)
+      },
+      onLog: async (message: string) => {
+        this.fileSystem.appendFile(logPath, `\n${message}`)
+      }
     }
   }
 }
