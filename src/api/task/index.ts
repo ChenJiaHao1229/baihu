@@ -4,7 +4,10 @@ export const getTaskList = (params: TaskInfo): Promise<ResponseDataType<TaskInfo
   return request({ url: '/task/list', method: 'GET', params })
 }
 export const runTask = (id: string): Promise<ResponseDataType> => {
-  return request({ url: `/task/run/${id}`, method: 'POST' })
+  return request({ url: `/task/run/${id}`, method: 'PUT' })
+}
+export const stopTask = (id: string): Promise<ResponseDataType> => {
+  return request({ url: `/task/stop/${id}`, method: 'PUT' })
 }
 export const addTask = (data: TaskInfo) => {
   return request({ url: `/task`, method: 'POST', data })

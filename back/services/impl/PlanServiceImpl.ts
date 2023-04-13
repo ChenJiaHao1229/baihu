@@ -5,9 +5,12 @@ import PlanService from '../PlanService'
 import constant from '../../util/constant'
 import { PlanModel } from '../../data/plan'
 import { Service } from 'typedi'
+import TaskServiceImpl from './TaskServiceImpl'
 
 @Service()
 export default class PlanServiceImpl implements PlanService {
+  constructor(private taskService: TaskServiceImpl) {}
+
   public async getPlanList(search: PostSearchListType): Promise<PaginationType<PlanInfo>> {
     // 数据解构
     const {
@@ -67,5 +70,21 @@ export default class PlanServiceImpl implements PlanService {
       if (error.name === 'SequelizeUniqueConstraintError') throw '计划名重复'
       throw error
     }
+  }
+  public async runPlan(id: string) {
+    const planInfo = await PlanModel.findOne({ where: { id }, include: [{ model: TaskModel }] })
+    planInfo?.tasks?.forEach((item) => {
+      try {
+        this.taskService.runTask(item.id!)
+      } catch (error) {}
+    })
+  }
+  public async stopPlan(id: string) {
+    const planInfo = await PlanModel.findOne({ where: { id }, include: [{ model: TaskModel }] })
+    planInfo?.tasks?.forEach((item) => {
+      try {
+        this.taskService.stopTask(item.id!)
+      } catch (error) {}
+    })
   }
 }

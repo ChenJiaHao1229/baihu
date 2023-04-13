@@ -1,10 +1,10 @@
 import 'reflect-metadata' // typedi 依赖注入需要引入
+import bodyParser from 'body-parser'
 import express, { Request, Response, NextFunction, Router } from 'express'
 import config from './util/constant'
 import Logger from './util/logger'
 import { tokenManage } from './util/tokenManage'
 import initFile from './util/initFile'
-import bodyParser from 'body-parser'
 import initDb from './util/initDb'
 import User from './controllers/User'
 import Plan from './controllers/Plan'
@@ -36,12 +36,22 @@ import Task from './controllers/Task'
 
   // 验证token是否有效 以及过滤无需验证接口
   app.use(tokenManage.guard())
-  app.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {
-    if (err.name === 'UnauthorizedError') {
-      return res.status(err.status).send({ code: err.status, message: err.message }).end()
+  app.use(
+    (
+      err: Error & { status: number },
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      if (err.name === 'UnauthorizedError') {
+        return res
+          .status(err.status)
+          .send({ code: err.status, message: err.message })
+          .end()
+      }
+      return next(err)
     }
-    return next(err)
-  })
+  )
 
   // 对body处理
   app.use(bodyParser.json({ limit: '50mb' }))
@@ -54,12 +64,19 @@ import Task from './controllers/Task'
   app.use('/script', Script(Router()))
 
   // 统一错误处理
-  app.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.status || 500)
-    res.json({
-      code: err.status || 500,
-      status: false,
-      message: err.message || err
-    })
-  })
+  app.use(
+    (
+      err: Error & { status: number },
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      res.status(err.status || 500)
+      res.json({
+        code: err.status || 500,
+        status: false,
+        message: err.message || err
+      })
+    }
+  )
 })()

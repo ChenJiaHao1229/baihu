@@ -1,7 +1,4 @@
-import { getScriptAllList } from '@/api/script'
-import constant from '@/utils/constant'
-import { FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons'
-import { Form, Input, message, Modal, TreeSelect } from 'antd'
+import { Form, Input, Modal, TreeSelect } from 'antd'
 import React, { useEffect, useState } from 'react'
 
 type AddTaskPropsType = {

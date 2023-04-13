@@ -6,4 +6,8 @@ export default interface PlanService {
   deletePlan: (planId: string) => void
 
   createPlan: (planData: PlanInfo) => void
+
+  runPlan: (id: string) => void
+
+  stopPlan: (id: string) => void
 }

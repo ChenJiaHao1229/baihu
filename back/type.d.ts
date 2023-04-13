@@ -62,7 +62,6 @@ type TaskInfo = {
   taskName?: string // 任务名称
   path?: string // 脚本路径
   status?: number // 状态
-  disable?: boolean // 是否禁用
   runTime?: number // 运行时间
   plan?: PlanInfo // 关联计划
 }

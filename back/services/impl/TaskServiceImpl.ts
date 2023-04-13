@@ -1,6 +1,6 @@
 import { TaskModel } from './../../data/task'
 import TaskService from '../TaskService'
-import { Service } from 'typedi'
+import { Service, Inject } from 'typedi'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import path from 'path'
 import constant from '../../util/constant'
@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { getFileType, removeNullValue } from '../../util'
 import { PlanModel } from '../../data/plan'
 import FileSystemImpl from './FileServiceImpl'
+import treeKill from 'tree-kill'
 
 @Service()
 export default class TaskServiceImpl implements TaskService {
@@ -15,7 +16,6 @@ export default class TaskServiceImpl implements TaskService {
 
   constructor(private fileSystem: FileSystemImpl) {}
 
-  public async stopTask(id: string) {}
   public async getTaskList(search: TaskInfo): Promise<TaskInfo[]> {
     // 数据解构
     const { planId } = search
@@ -59,6 +59,13 @@ export default class TaskServiceImpl implements TaskService {
       throw error
     }
   }
+  public async stopTask(id: string) {
+    if (this.taskMap.has(id.toString())) {
+      const pid = this.taskMap.get(id.toString())?.pid
+      pid && treeKill(pid)
+      this.taskMap.delete(id.toString())
+    }
+  }
 
   public async addTask(data: TaskInfo): Promise<TaskInfo> {
     try {
@@ -74,10 +81,8 @@ export default class TaskServiceImpl implements TaskService {
   }
   public async updateTask(taskInfo: TaskInfo) {
     try {
-      const { taskName, path, disable, running, runTime } = taskInfo
-      console.log(taskName, path, disable, running, runTime)
-
-      await TaskModel.update(removeNullValue({ taskName, path, disable, running, runTime }), {
+      const { taskName, path, status, runTime } = taskInfo
+      await TaskModel.update(removeNullValue({ taskName, path, status, runTime }), {
         where: { id: taskInfo.id }
       })
     } catch (error: any) {
@@ -105,23 +110,23 @@ export default class TaskServiceImpl implements TaskService {
       },
       onStart: async (child) => {
         // 判断该任务是否在运行
-        if (this.taskMap.has(task.id!)) this.taskMap.get(task.id!)?.kill()
-        this.taskMap.set(task.id!, child)
-        task.status = 2
-        await TaskModel.update({ status: 2 }, { where: { id: task.id } })
+        this.taskMap.has(task.id!.toString()) && this.taskMap.get(task.id!.toString())?.kill()
+        this.taskMap.set(task.id!.toString(), child)
+        task.status = 1
+        await TaskModel.update({ status: 1 }, { where: { id: task.id } })
       },
       onEnd: async (endTime, diff) => {
         this.fileSystem.appendFile(
           logPath,
           `\n## 执行结束... ${endTime.format('YYYY-MM-DD HH:mm:ss')}  耗时 ${diff} 秒`
         )
-        this.taskMap.delete(task.id!)
+        this.taskMap.delete(task.id!.toString())
         // 正常运行结束则修改
-        if (task.status === 2) await TaskModel.update({ status: 1 }, { where: { id: task.id } })
+        if (task.status === 1) await TaskModel.update({ status: 0 }, { where: { id: task.id } })
       },
       onError: async (message: string) => {
-        task.status = 3
-        await TaskModel.update({ status: 3 }, { where: { id: task.id } })
+        task.status = 2
+        await TaskModel.update({ status: 2 }, { where: { id: task.id } })
         this.fileSystem.appendFile(logPath, `\n${message}`)
       },
       onLog: async (message: string) => {

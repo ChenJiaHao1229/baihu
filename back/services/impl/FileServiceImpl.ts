@@ -109,7 +109,6 @@ export default class FileSystemImpl implements FileSystem {
   // 创建文件
   public make(filePath: string, type: number = 0, data: string = '') {
     return new Promise<boolean>((resolve, reject) => {
-      console.log(filePath, type, data)
       if (fs.existsSync(filePath)) reject('文件或目录已存在！')
       if (type) {
         const dirname = path.dirname(filePath)

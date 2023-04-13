@@ -2,7 +2,7 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, DatePicker, message, Switch } from 'antd'
 import { useState, useRef } from 'react'
-import { createPlan, deletePlan, getPlanList, updatePlan } from '@/api/plan'
+import { createPlan, deletePlan, getPlanList, runPlan, stopPlan, updatePlan } from '@/api/plan'
 import AddPlan from './AddPlan'
 import TaskTable from './TaskTable'
 import Cron from 'react-cron-ts'
@@ -26,7 +26,7 @@ const PlanTable: React.FC = () => {
       ellipsis: true,
       hideInSearch: true,
       formItemProps: { rules: [{ required: true, message: '此项为必填项' }] },
-      renderFormItem: () => <Cron />
+      renderFormItem: () => <Cron height={300} />
     },
     {
       title: '状态',
@@ -79,8 +79,18 @@ const PlanTable: React.FC = () => {
             <a key="edit" onClick={() => action?.startEditable?.(record.id!)}>
               编辑
             </a>
-            <a key="run">运行</a>
-            <a key="stop">暂停</a>
+            <a
+              key="run"
+              onClick={() => runPlan(record.id!).then((res) => message.success(res.message))}
+            >
+              运行
+            </a>
+            <a
+              key="stop"
+              onClick={() => stopPlan(record.id!).then((res) => message.success(res.message))}
+            >
+              暂停
+            </a>
           </div>
         )
       }

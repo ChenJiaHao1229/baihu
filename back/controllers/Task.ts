@@ -16,10 +16,20 @@ export default (router: Router) => {
   })
 
   // 运行任务
-  router.post('/run/:id', async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/run/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
       await taskService.runTask(req.params.id)
-      res.send({})
+      res.send({ code: 200, status: true, message: '运行成功' })
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  // 暂停任务
+  router.put('/stop/:id', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await taskService.stopTask(req.params.id)
+      res.send({ code: 200, status: true, message: '中止成功' })
     } catch (error) {
       next(error)
     }
