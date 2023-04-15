@@ -32,7 +32,7 @@ const Login: React.FC = () => {
         message.success(res.message)
         // 存储token数据
         localStorage.setItem(constant.authToken, res.data?.token || '')
-        navigate(`/task`)
+        navigate(`/plan`)
       } else {
         message.error(res.message)
         if ([410, 403].includes(res.code!) && res.data!.waitTime) {

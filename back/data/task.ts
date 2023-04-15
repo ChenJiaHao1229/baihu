@@ -1,18 +1,23 @@
-import { DataTypes, Model } from 'sequelize'
 import db from '.'
+import { DataTypes, Model } from 'sequelize'
+import { PlanModel } from './plan'
 
 interface TaskInstance extends Model<TaskInfo, TaskInfo>, TaskInfo {}
 
 export const TaskModel = db.define<TaskInstance>('task', {
   id: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
+    unique: true,
     allowNull: true,
     autoIncrement: true
   },
-  taskName: { type: DataTypes.STRING, allowNull: true },
-  cron: { type: DataTypes.STRING, allowNull: true },
+  planId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: true
+  },
+  taskName: { type: DataTypes.STRING, allowNull: true, unique: true },
+  path: { type: DataTypes.STRING, allowNull: true, primaryKey: true },
   status: { type: DataTypes.INTEGER, defaultValue: 0 },
-  lastRunTime: DataTypes.BIGINT,
-  runTime: DataTypes.BIGINT
+  runTime: DataTypes.DATE
 })

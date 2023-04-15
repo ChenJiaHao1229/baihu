@@ -1,6 +1,6 @@
-import jwt, { Secret, SignOptions } from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken'
 import expressjwt, { IsRevokedCallback } from 'express-jwt'
-import constant from '../util/constant'
+import constant from './constant'
 
 type payloadType = string | Buffer | object
 
@@ -21,7 +21,7 @@ export default class TokenManage {
       ...options
     })
   }
-  // 校验token
+  // 校验tokenF
   verify(payload: string, options?: SignOptions) {
     return jwt.verify(payload, this.secretOrPrivateKey, options)
   }

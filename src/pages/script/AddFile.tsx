@@ -1,4 +1,4 @@
-import { Form, Input, message, Modal, Select } from 'antd'
+import { Form, Input, Modal, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 
 type AddFilePropsType = {
@@ -11,16 +11,16 @@ type AddFilePropsType = {
 const AddFile: React.FC<AddFilePropsType> = ({ open, setOpen, data, onOk }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState<boolean>(false)
-  const [label, setLabel] = useState('文件名')
+  const [label, setLabel] = useState('文件名称')
 
   useEffect(() => {
     if (open) {
       form.resetFields()
-      setLabel('文件名')
+      setLabel('文件名称')
     }
     if (open && data) {
-      form.setFieldsValue(data)
-      setLabel(data.type ? '文件夹名称' : '文件名称')
+      form.setFieldsValue({ ...data, type: data.type ? 1 : 0 })
+      setLabel(data.type ? '文件名称' : '文件夹名称')
     }
   }, [open])
 
@@ -34,18 +34,18 @@ const AddFile: React.FC<AddFilePropsType> = ({ open, setOpen, data, onOk }) => {
       onOk={() => form.validateFields().then((values) => onOk({ ...data, ...values }, setLoading))}
     >
       <Form form={form} layout="vertical">
-        <Form.Item label="类型" name="type" rules={[{ required: true }]} initialValue={0}>
+        <Form.Item label="类型" name="type" rules={[{ required: true }]} initialValue={1}>
           <Select
             disabled={!!data}
-            onSelect={(value) => setLabel(value ? '文件夹名称' : '文件名称')}
+            onSelect={(value) => setLabel(value ? '文件名称' : '文件夹名称')}
             options={[
-              { label: '文件', value: 0 },
-              { label: '文件夹', value: 1 }
+              { label: '文件', value: 1 },
+              { label: '文件夹', value: 0 }
             ]}
           />
         </Form.Item>
         <Form.Item label={label} name="name" rules={[{ required: true }]}>
-          <Input placeholder="请输入文件夹名称" />
+          <Input placeholder="请输入" />
         </Form.Item>
       </Form>
     </Modal>

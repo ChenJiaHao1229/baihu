@@ -1,4 +1,5 @@
 @import url('~antd/dist/reset.css');
+@import url('./font/iconfont.css');
 
 html,
 body {
@@ -41,4 +42,10 @@ body {
 // 当同时有垂直滚动条和水平滚动条时交汇的部分。通常是浏览器窗口的右下角。
 ::-webkit-scrollbar-corner {
   background-color: inherit;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
