@@ -1,8 +1,8 @@
 import { lazy } from 'react'
-import { Navigate, Outlet, RouteObject } from 'react-router-dom'
+import { Navigate, RouteObject } from 'react-router-dom'
 import BHLayout from '@/layout/index'
 import Login from '@/pages/login/index'
-const Task = lazy(() => import('@/pages/task/index'))
+const Plan = lazy(() => import('@/pages/plan/index'))
 const Setting = lazy(() => import('@/pages/setting/index'))
 const Script = lazy(() => import('@/pages/script/index'))
 
@@ -11,10 +11,10 @@ export const routes: RouteObject[] = [
     path: '',
     element: <BHLayout />,
     children: [
-      { path: '/', element: <Navigate to="/task" /> },
+      { path: '/', element: <Navigate to="/plan" /> },
       {
-        path: '/task',
-        element: <Task />
+        path: '/plan',
+        element: <Plan />
       },
       {
         path: '/setting',

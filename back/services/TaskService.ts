@@ -1,9 +1,13 @@
 export default interface TaskService {
-  getTaskList: (pageData: PostSearchListType) => Promise<PaginationType<TaskInfo>>
+  getTaskList: (pageData: TaskInfo) => Promise<TaskInfo[]>
 
-  updateTask: (taskId: string, taskData: TaskInfo) => Promise<ResponseDataType>
+  runTask: (id: string) => void
 
-  deleteTask: (taskId: string) => Promise<ResponseDataType>
+  stopTask: (id: string) => void
 
-  createTask: (taskData: TaskInfo) => void
+  addTask: (data: TaskInfo) => Promise<TaskInfo>
+
+  deleteTask: (taskId: string) => void
+
+  updateTask: (taskInfo: TaskInfo) => void
 }

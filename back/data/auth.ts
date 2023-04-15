@@ -1,18 +1,7 @@
 import db from '.'
 import { DataTypes, Model } from 'sequelize'
 
-export type AuthInfo = {
-  id?: number
-  username?: string
-  password?: string
-  token?: string
-  wait?: number
-  lastLogin?: number
-  ip?: string
-  address?: string
-  createdAt?: string
-  updatedAt?: string
-}
+export type AuthInfo = Partial<UserInfo>
 
 interface AuthInstance extends Model<AuthInfo, AuthInfo>, AuthInfo {}
 
