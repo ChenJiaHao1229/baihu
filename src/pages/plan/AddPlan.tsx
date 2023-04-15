@@ -62,6 +62,7 @@ const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, onOk }) => {
       confirmLoading={loading}
       onOk={async () => {
         const values = await form.validateFields()
+        values.tasks = values.tasks.map((item: string) => ({ path: item }))
         onOk(values, setLoading)
       }}
     >
@@ -73,9 +74,9 @@ const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, onOk }) => {
           label="定时规则"
           name="cron"
           rules={[{ required: true }, { max: 255 }]}
-          initialValue="0 0 0 * * ? *"
+          initialValue="0 0 0 * * ?"
         >
-          <Cron inputProps={{ placeholder: '请编辑' }} height={400} />
+          <Cron inputProps={{ placeholder: '请编辑' }} height={400} noYear />
         </Form.Item>
         <Form.Item label="运行脚本" name="tasks" rules={[{ required: true }]}>
           <TreeSelect

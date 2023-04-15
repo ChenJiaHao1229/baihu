@@ -6,6 +6,7 @@ import constant from '../../util/constant'
 import { PlanModel } from '../../data/plan'
 import { Service } from 'typedi'
 import TaskServiceImpl from './TaskServiceImpl'
+import nodeSchedule from 'node-schedule'
 
 @Service()
 export default class PlanServiceImpl implements PlanService {
@@ -39,30 +40,40 @@ export default class PlanServiceImpl implements PlanService {
     }
   }
   public async updatePlan(planData: PlanInfo) {
-    await PlanModel.update(
-      removeNullValue({
-        planName: planData.planName,
-        cron: planData.cron,
-        disable: planData.disable
-      }),
-      { where: { id: planData.id } }
-    )
+    const { id, planName, cron, disable } = planData
+    await PlanModel.update(removeNullValue({ planName, cron, disable }), { where: { id } })
+    // 判断是否存在这个定时任务
+    if (nodeSchedule.scheduledJobs[String(id)]) {
+      // 判断是否修改为禁用
+      if (disable) nodeSchedule.scheduledJobs[String(id)].cancel()
+      else nodeSchedule.scheduledJobs[String(id)].reschedule(cron!)
+    } else if (!disable) {
+      // 过不存在定时任务 且状态为非禁用则创建定时任务
+      nodeSchedule.scheduleJob(String(id), cron!, () => this.runPlan(id!))
+    }
   }
-  public async deletePlan(planId: string) {
-    await PlanModel.destroy({ where: { id: planId } })
-    await TaskModel.destroy({ where: { planId } })
+  public async deletePlan(id: string) {
+    await PlanModel.destroy({ where: { id } })
+    await TaskModel.destroy({ where: { planId: id } })
+    this.scheduleMap.has(id) && this.scheduleMap.get(id)?.cancel()
   }
   public async createPlan(planData: PlanInfo) {
     try {
       // 创建任务
       const createResult = await PlanModel.create(planData)
       const { tasks } = planData
-      const { id, planName } = createResult
+      const { id, planName, cron } = createResult
+      // 定时运行
+      nodeSchedule.scheduleJob(String(id), cron!, () => this.runPlan(id!))
       // 遍历创建脚本任务
       const taskResult: TaskInfo[] = []
       for (let i = 0; i < (tasks?.length || 0); i++) {
         taskResult.push(
-          await TaskModel.create({ planId: id, taskName: `${planName}-${i + 1}`, path: tasks![i] })
+          await TaskModel.create({
+            planId: id,
+            taskName: `${planName}-${i + 1}`,
+            path: tasks![i].path
+          })
         )
       }
       return { ...createResult.dataValues, tasks: taskResult }
@@ -72,8 +83,10 @@ export default class PlanServiceImpl implements PlanService {
     }
   }
   public async runPlan(id: string) {
+    console.log('我运行了', id)
     const planInfo = await PlanModel.findOne({ where: { id }, include: [{ model: TaskModel }] })
     planInfo?.tasks?.forEach((item) => {
+      // 确保全部遍历 不被失败任务所中断
       try {
         this.taskService.runTask(item.id!)
       } catch (error) {}

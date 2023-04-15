@@ -60,10 +60,10 @@ export default class TaskServiceImpl implements TaskService {
     }
   }
   public async stopTask(id: string) {
-    if (this.taskMap.has(id.toString())) {
-      const pid = this.taskMap.get(id.toString())?.pid
+    if (this.taskMap.has(String(id))) {
+      const pid = this.taskMap.get(String(id))?.pid
       pid && treeKill(pid)
-      this.taskMap.delete(id.toString())
+      this.taskMap.delete(String(id))
     }
   }
 
@@ -110,8 +110,8 @@ export default class TaskServiceImpl implements TaskService {
       },
       onStart: async (child) => {
         // 判断该任务是否在运行
-        this.taskMap.has(task.id!.toString()) && this.taskMap.get(task.id!.toString())?.kill()
-        this.taskMap.set(task.id!.toString(), child)
+        this.taskMap.has(String(task.id)) && this.taskMap.get(String(task.id))?.kill()
+        this.taskMap.set(String(task.id), child)
         task.status = 1
         await TaskModel.update({ status: 1 }, { where: { id: task.id } })
       },
@@ -120,7 +120,7 @@ export default class TaskServiceImpl implements TaskService {
           logPath,
           `\n## 执行结束... ${endTime.format('YYYY-MM-DD HH:mm:ss')}  耗时 ${diff} 秒`
         )
-        this.taskMap.delete(task.id!.toString())
+        this.taskMap.delete(String(task.id))
         // 正常运行结束则修改
         if (task.status === 1) await TaskModel.update({ status: 0 }, { where: { id: task.id } })
       },

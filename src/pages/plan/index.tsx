@@ -26,7 +26,7 @@ const PlanTable: React.FC = () => {
       ellipsis: true,
       hideInSearch: true,
       formItemProps: { rules: [{ required: true, message: '此项为必填项' }] },
-      renderFormItem: () => <Cron height={300} />
+      renderFormItem: () => <Cron height={300} noYear />
     },
     {
       title: '状态',
@@ -123,7 +123,8 @@ const PlanTable: React.FC = () => {
   }
   // 修改计划
   const handlePlan = async (key: any, record: PlanInfo) => {
-    const res = await updatePlan(record)
+    const { id, planName, cron } = record
+    const res = await updatePlan({ id, planName, cron })
     if (res.status) {
       message.success(res.message)
       return true
