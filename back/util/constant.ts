@@ -20,6 +20,7 @@ const filesFilter = ['node_modules', 'package.json']
 // 校验白名单
 const whitePath = ['/user/login']
 const runScript = { js: 'node', ts: 'ts-node' } as { [keyName: string]: string }
+const userInfo = { username: 'admin', password: '21232f297a57a5a743894a0e4a801fc3' }
 
 export default {
   BH_Secret,
@@ -39,5 +40,6 @@ export default {
   logs,
   sorter,
   filesFilter,
-  runScript
+  runScript,
+  userInfo
 }

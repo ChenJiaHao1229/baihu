@@ -1,4 +1,4 @@
-import { ChromeFilled, CrownFilled, SmileFilled } from '@ant-design/icons'
+import { CrownFilled, SmileFilled } from '@ant-design/icons'
 type ConstantFileInfoType = { [key: string]: { icon: JSX.Element; language: string } }
 export default {
   siteName: '白虎控制台',
