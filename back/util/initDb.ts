@@ -4,6 +4,7 @@ import Logger from './logger'
 import { SettingModel } from '../data/setting'
 import { AuthModel } from '../data/auth'
 import constant from './constant'
+import { EnvTagModel, VariableModel } from '../data/variable'
 
 export default async () => {
   try {
@@ -11,10 +12,15 @@ export default async () => {
     await SettingModel.sync()
     await PlanModel.sync()
     await TaskModel.sync()
+    await EnvTagModel.sync()
+    await VariableModel.sync()
 
     // 建立关联关系
     PlanModel.hasMany(TaskModel, { foreignKey: 'planId' })
     TaskModel.belongsTo(PlanModel, { foreignKey: 'planId' })
+
+    EnvTagModel.hasMany(VariableModel, { foreignKey: 'tagId' })
+    VariableModel.belongsTo(EnvTagModel, { foreignKey: 'tagId' })
 
     // 初始化表格数据
     if ((await AuthModel.count()) === 0) {
