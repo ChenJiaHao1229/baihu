@@ -1,6 +1,6 @@
 import { TaskModel } from './../../data/task'
 import { removeFalseValue, removeNullValue } from './../../util/index'
-import { Op } from 'sequelize'
+import { Op, UniqueConstraintError } from 'sequelize'
 import PlanService from '../PlanService'
 import constant from '../../util/constant'
 import { PlanModel } from '../../data/plan'
@@ -55,7 +55,7 @@ export default class PlanServiceImpl implements PlanService {
   public async deletePlan(id: string) {
     await PlanModel.destroy({ where: { id } })
     await TaskModel.destroy({ where: { planId: id } })
-    this.scheduleMap.has(id) && this.scheduleMap.get(id)?.cancel()
+    nodeSchedule.scheduledJobs[String(id)]?.cancel()
   }
   public async createPlan(planData: PlanInfo) {
     try {
@@ -78,7 +78,7 @@ export default class PlanServiceImpl implements PlanService {
       }
       return { ...createResult.dataValues, tasks: taskResult }
     } catch (error: any) {
-      if (error.name === 'SequelizeUniqueConstraintError') throw '计划名重复'
+      if (error instanceof UniqueConstraintError) throw '计划名重复'
       throw error
     }
   }

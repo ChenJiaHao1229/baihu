@@ -5,6 +5,7 @@ import Login from '@/pages/login/index'
 const Plan = lazy(() => import('@/pages/plan/index'))
 const Setting = lazy(() => import('@/pages/setting/index'))
 const Script = lazy(() => import('@/pages/script/index'))
+const Variable = lazy(() => import('@/pages/variable/index'))
 
 export const routes: RouteObject[] = [
   {
@@ -23,6 +24,10 @@ export const routes: RouteObject[] = [
       {
         path: '/scripts',
         element: <Script />
+      },
+      {
+        path: '/variable',
+        element: <Variable />
       }
     ]
   },
