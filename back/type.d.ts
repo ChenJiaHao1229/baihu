@@ -95,3 +95,22 @@ type TaskCallbacks<T = any, P = any> = {
   onLog?: (message: string) => Promise<void>
   onError?: (message: string) => Promise<void>
 }
+
+// 变量
+type VariableInfo = {
+  id?: string
+  varName?: string
+  tagId?: string
+  envTag?: EnvTagInfo
+  value?: string
+  weight?: number
+}
+
+// 变量的tag
+type EnvTagInfo = {
+  id?: string
+  name?: string
+  variables?: VariableInfo[]
+}
+
+type VariableResponseType = ResponseDataType<PaginationType<VariableInfo>>

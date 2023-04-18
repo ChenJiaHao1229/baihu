@@ -54,8 +54,7 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       dataIndex: 'runTime',
       ellipsis: true,
       valueType: 'dateTime',
-      editable: false,
-      sorter: true
+      editable: false
     },
     {
       title: () => {

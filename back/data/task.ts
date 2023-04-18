@@ -19,5 +19,5 @@ export const TaskModel = db.define<TaskInstance>('task', {
   taskName: { type: DataTypes.STRING, allowNull: true, unique: true },
   path: { type: DataTypes.STRING, allowNull: true, primaryKey: true },
   status: { type: DataTypes.INTEGER, defaultValue: 0 },
-  runTime: DataTypes.DATE
+  runTime: DataTypes.NUMBER
 })

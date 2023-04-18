@@ -9,6 +9,7 @@ import { getFileType, removeNullValue } from '../../util'
 import { PlanModel } from '../../data/plan'
 import FileSystemImpl from './FileServiceImpl'
 import treeKill from 'tree-kill'
+import { UniqueConstraintError } from 'sequelize'
 
 @Service()
 export default class TaskServiceImpl implements TaskService {
@@ -71,7 +72,7 @@ export default class TaskServiceImpl implements TaskService {
     try {
       return await TaskModel.create(data)
     } catch (error: any) {
-      if (error.name === 'SequelizeUniqueConstraintError') throw '添加重复！'
+      if (error instanceof UniqueConstraintError) throw '添加重复！'
       throw error
     }
   }
@@ -86,7 +87,7 @@ export default class TaskServiceImpl implements TaskService {
         where: { id: taskInfo.id }
       })
     } catch (error: any) {
-      if (error.name === 'SequelizeUniqueConstraintError') throw '任务名重复'
+      if (error instanceof UniqueConstraintError) throw '任务名重复'
       throw error
     }
   }
@@ -122,7 +123,9 @@ export default class TaskServiceImpl implements TaskService {
         )
         this.taskMap.delete(String(task.id))
         // 正常运行结束则修改
-        if (task.status === 1) await TaskModel.update({ status: 0 }, { where: { id: task.id } })
+        if (task.status === 1)
+          await TaskModel.update({ status: 0, runTime: diff }, { where: { id: task.id } })
+        else await TaskModel.update({ runTime: diff }, { where: { id: task.id } })
       },
       onError: async (message: string) => {
         task.status = 2
