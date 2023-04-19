@@ -6,6 +6,7 @@ import { message, Spin } from 'antd'
 import { Suspense, useEffect, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { getTheme, updateTheme } from '@/api/user'
+import logo from '@/assets/logo.png'
 
 const BHLayout = () => {
   const [settings, setSetting] = useState<Partial<ProSettings> | undefined>()
@@ -25,20 +26,31 @@ const BHLayout = () => {
   return (
     <div id="BH-layout" style={{ height: '100vh' }}>
       <ProLayout
+        title="白虎控制台"
+        logo={logo}
         siderWidth={256}
         route={constant.menuRoute}
         appList={constant.otherAppList}
         menu={{ type: 'sub' }}
         avatarProps={{
-          src: 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-          title: '七妮妮'
+          src: 'https://avatars.githubusercontent.com/u/86949839?s=40&v=4',
+          title: '陈先生'
         }}
         actionsRender={(props) => {
           if (props.isMobile) return []
           return [
-            <InfoCircleFilled key="InfoCircleFilled" />,
-            <QuestionCircleFilled key="QuestionCircleFilled" />,
-            <GithubFilled key="GithubFilled" />
+            <InfoCircleFilled
+              key="InfoCircleFilled"
+              onClick={() => window.open('https://github.com/ChenJiaHao1229', '_blank')}
+            />,
+            <QuestionCircleFilled
+              key="QuestionCircleFilled"
+              onClick={() => window.open('https://github.com/ChenJiaHao1229', '_blank')}
+            />,
+            <GithubFilled
+              key="GithubFilled"
+              onClick={() => window.open('https://github.com/ChenJiaHao1229', '_blank')}
+            />
           ]
         }}
         location={{ pathname }}
