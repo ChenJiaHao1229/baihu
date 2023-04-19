@@ -4,10 +4,7 @@ import ShowDom from '@/components/ShowDom'
 import PasswordManage from './PasswordManage'
 
 // 标签列表
-const TabList = [
-  { key: 'password', label: '修改密码' },
-  { key: 'other', label: '其他设置' }
-]
+const TabList = [{ key: 'password', label: '修改密码' }]
 
 const Setting: React.FC = () => {
   const [active, setAcitve] = useState<string>('password')
