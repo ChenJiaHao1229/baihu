@@ -6,6 +6,7 @@ const Plan = lazy(() => import('@/pages/plan/index'))
 const Setting = lazy(() => import('@/pages/setting/index'))
 const Script = lazy(() => import('@/pages/script/index'))
 const Variable = lazy(() => import('@/pages/variable/index'))
+const Logs = lazy(() => import('@/pages/logs/index'))
 
 export const routes: RouteObject[] = [
   {
@@ -28,6 +29,10 @@ export const routes: RouteObject[] = [
       {
         path: '/variable',
         element: <Variable />
+      },
+      {
+        path: '/logs',
+        element: <Logs />
       }
     ]
   },

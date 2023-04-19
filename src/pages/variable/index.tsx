@@ -143,6 +143,7 @@ const VariableTable: React.FC = () => {
   return (
     <>
       <ProTable<VariableInfo>
+        style={{ minWidth: 640 }}
         rowKey="id"
         columns={columns}
         request={requestList}

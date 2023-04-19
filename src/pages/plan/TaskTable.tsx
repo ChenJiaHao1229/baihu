@@ -50,11 +50,19 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       )
     },
     {
-      title: '运行时间',
+      title: '上次运行时间',
       dataIndex: 'runTime',
       ellipsis: true,
-      valueType: 'dateTime',
-      editable: false
+      editable: false,
+      renderText: (text) => {
+        if (!text) return '-'
+        const hour = Math.floor(text / 60 / 60)
+        const minute = Math.floor((text % (60 * 60)) / 60)
+        const second = Math.floor((text % (60 * 60)) % 60)
+        return `${hour ? `${hour}小时` : ''}${minute ? `${minute}分` : ''}${
+          second && `${second}秒`
+        }`
+      }
     },
     {
       title: () => {
