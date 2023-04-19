@@ -11,6 +11,7 @@ import Plan from './controllers/Plan'
 import Script from './controllers/Script'
 import Task from './controllers/Task'
 import Variable from './controllers/Variable'
+import Logs from './controllers/Logs'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()
@@ -54,6 +55,7 @@ import Variable from './controllers/Variable'
   app.use('/task', Task(Router()))
   app.use('/script', Script(Router()))
   app.use('/var', Variable(Router()))
+  app.use('/logs', Logs(Router()))
 
   // 统一错误处理
   app.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {

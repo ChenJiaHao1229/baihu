@@ -10,7 +10,6 @@ import {
   ExclamationCircleFilled,
   FileTextOutlined,
   FolderOpenOutlined,
-  FolderOutlined,
   HomeOutlined
 } from '@ant-design/icons'
 import { PageHeader } from '@ant-design/pro-components'

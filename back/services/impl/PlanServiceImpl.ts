@@ -83,7 +83,6 @@ export default class PlanServiceImpl implements PlanService {
     }
   }
   public async runPlan(id: string) {
-    console.log('我运行了', id)
     const planInfo = await PlanModel.findOne({ where: { id }, include: [{ model: TaskModel }] })
     planInfo?.tasks?.forEach((item) => {
       // 确保全部遍历 不被失败任务所中断
@@ -91,6 +90,7 @@ export default class PlanServiceImpl implements PlanService {
         this.taskService.runTask(item.id!)
       } catch (error) {}
     })
+    await PlanModel.update({ lastRunTime: new Date().getTime() }, { where: { id } })
   }
   public async stopPlan(id: string) {
     const planInfo = await PlanModel.findOne({ where: { id }, include: [{ model: TaskModel }] })
