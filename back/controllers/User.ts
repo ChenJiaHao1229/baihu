@@ -39,7 +39,7 @@ export default (router: Router) => {
   // 修改密码
   router.put('/password', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await userService.updatePwd(req.body, req)
+      const result = await userService.updatePwd(req.body, req as any)
       if (result) res.send({ code: 200, status: true, message: '修改成功！' })
       else res.send({ code: 200, status: false, message: '密码错误！' })
     } catch (error) {

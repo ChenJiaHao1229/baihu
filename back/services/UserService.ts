@@ -11,5 +11,5 @@ export default interface UserService {
 
   updateTheme: (data: any) => Promise<boolean>
 
-  updatePwd: (data: updatePwdType, req: Request) => Promise<boolean>
+  updatePwd: (data: updatePwdType, req: Request & { auth: { id: string } }) => Promise<boolean>
 }

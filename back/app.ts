@@ -1,4 +1,6 @@
 import 'reflect-metadata' // typedi 依赖注入需要引入
+import * as dotenv from 'dotenv'
+dotenv.config()
 import bodyParser from 'body-parser'
 import express, { Request, Response, NextFunction, Router } from 'express'
 import config from './util/constant'
@@ -12,6 +14,7 @@ import Script from './controllers/Script'
 import Task from './controllers/Task'
 import Variable from './controllers/Variable'
 import Logs from './controllers/Logs'
+import path from 'path'
 ;(async () => {
   // ✌️✊☝️✋
   const app = express()
@@ -20,16 +23,7 @@ import Logs from './controllers/Logs'
   await initFile()
   await initDb()
 
-  // 开启监听
-  app
-    .listen(config.port, () => {
-      Logger.info(`✌️ 后端服务启动成功！`)
-    })
-    .on('error', (err) => {
-      Logger.error(`✊ ${err}`)
-      process.exit(1)
-    })
-
+  app.use(express.static(path.join(__dirname, '../public')))
   // 输出日志
   app.use((req, res, next) => {
     Logger.info(`✋ method:${req.method}  url:${req.url}`)
@@ -38,12 +32,19 @@ import Logs from './controllers/Logs'
 
   // 验证token是否有效 以及过滤无需验证接口
   app.use(tokenManage.guard())
-  app.use((err: Error & { status: number }, req: Request, res: Response, next: NextFunction) => {
-    if (err.name === 'UnauthorizedError') {
-      return res.status(err.status).send({ code: err.status, message: err.message }).end()
+  app.use(
+    (
+      err: Error & { status: number; code: string },
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      if (err.name === 'UnauthorizedError') {
+        return res.status(err.status).send({ code: err.status, message: err.message }).end()
+      }
+      return next(err)
     }
-    return next(err)
-  })
+  )
 
   // 对body处理
   app.use(bodyParser.json({ limit: '50mb' }))
@@ -66,4 +67,14 @@ import Logs from './controllers/Logs'
       message: err.message || err
     })
   })
+
+  // 开启监听
+  app
+    .listen(config.port, () => {
+      Logger.info(`✌️ 后端服务启动成功！`)
+    })
+    .on('error', (err) => {
+      Logger.error(`✊ ${err}`)
+      process.exit(1)
+    })
 })()

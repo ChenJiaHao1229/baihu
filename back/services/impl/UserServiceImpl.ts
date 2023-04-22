@@ -84,9 +84,9 @@ export default class UserServiceImpl implements UserService {
   }
 
   // 修改密码
-  public async updatePwd(data: updatePwdType, req: Request) {
+  public async updatePwd(data: updatePwdType, req: Request & { auth: { id: string } }) {
     const { oldPwd, newPwd } = data
-    const { id } = req.user as { id: string }
+    const { id } = req.auth
     return (
       (await AuthModel.update({ password: newPwd }, { where: { id, password: oldPwd } }))[0] !== 0
     )
