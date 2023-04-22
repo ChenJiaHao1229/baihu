@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
-import expressjwt, { IsRevokedCallback } from 'express-jwt'
+import { expressjwt, IsRevoked } from 'express-jwt'
 import constant from './constant'
 
 type payloadType = string | Buffer | object
@@ -26,7 +26,7 @@ export default class TokenManage {
     return jwt.verify(payload, this.secretOrPrivateKey, options)
   }
   // token验证
-  guard(isRevoked?: IsRevokedCallback | undefined) {
+  guard(isRevoked?: IsRevoked | undefined) {
     return expressjwt({
       secret: this.secretOrPrivateKey,
       algorithms: ['HS512'],

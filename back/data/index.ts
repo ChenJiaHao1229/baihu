@@ -2,11 +2,11 @@ import Logger from '../util/logger'
 import { Sequelize } from 'sequelize'
 
 const db = new Sequelize({
-  database: 'BH',
-  username: 'root',
-  password: 'root',
-  host: 'localhost', //数据库地址
-  port: 3306, //数据库端口
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST, //数据库地址
+  port: parseInt(process.env.DB_PORT || '3306'), //数据库端口
   dialect: 'mysql', //数据库类型
   pool: {
     max: 5, //最大连接数量

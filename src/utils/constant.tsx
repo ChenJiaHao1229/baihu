@@ -2,7 +2,7 @@ import { CrownFilled, SmileFilled } from '@ant-design/icons'
 type ConstantFileInfoType = { [key: string]: { icon: JSX.Element; language: string } }
 export default {
   siteName: '白虎控制台',
-  apiPrefix: '/api',
+  apiPrefix: process.env.NODE_ENV === 'development' ? '/api' : '',
   authToken: 'BH_TOKEN',
   // 左侧导航
   menuRoute: {
