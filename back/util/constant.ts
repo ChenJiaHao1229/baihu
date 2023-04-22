@@ -2,8 +2,8 @@ import path from 'path'
 
 const BH_Secret = 'BH_Secret'
 const BH_ExpiresIn = '480h'
-const port = parseInt(process.env.BACK_PORT as string, 10) || 5600
-const rootPath = process.cwd() as string
+const port = 5600
+const rootPath = path.join(__dirname, '../../') as string
 const dataPath = path.join(rootPath, 'data')
 const templatePath = path.join(rootPath, 'template')
 const configPath = path.join(dataPath, 'config')
@@ -13,7 +13,7 @@ const authPath = path.join(configPath, 'auth.json')
 const themePath = path.join(configPath, 'theme.json')
 const authError = '用户名或者密码错误，请重新认证！'
 const loginFaild = '请先登录!'
-const logs = { level: process.env.LOG_LEVEL || 'silly' }
+const logs = { level: 'silly' }
 const sorter = { ascend: 'ASC', descend: 'DESC' }
 // 过滤的文件
 const filesFilter = ['node_modules', 'package.json']
