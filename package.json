@@ -11,6 +11,7 @@
     "back": "nodemon"
   },
   "dependencies": {
+    "axios": "^1.6.3",
     "baihu-tool": "./tool",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
