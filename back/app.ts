@@ -6,8 +6,7 @@ import express, { Request, Response, NextFunction, Router } from 'express'
 import config from './util/constant'
 import Logger from './util/logger'
 import { tokenManage } from './util/tokenManage'
-import initFile from './util/initFile'
-import initDb from './util/initDb'
+import initFun from './util/init'
 import User from './controllers/User'
 import Plan from './controllers/Plan'
 import Script from './controllers/Script'
@@ -20,8 +19,7 @@ import path from 'path'
   const app = express()
 
   // 初始化工作
-  await initFile()
-  await initDb()
+  await initFun()
 
   app.use(express.static(path.join(__dirname, '../public')))
   // 输出日志

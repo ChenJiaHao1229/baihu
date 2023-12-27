@@ -15,11 +15,13 @@ import {
 import { PageHeader } from '@ant-design/pro-components'
 import { Button, Modal, Dropdown, Menu, message, Select, Spin, Tooltip } from 'antd'
 import { useEffect, useRef, useState } from 'react'
-import Editor from '@monaco-editor/react'
+import Editor, { loader } from '@monaco-editor/react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import styles from './index.module.less'
 import constant from '@/utils/constant'
 import AddFile from './AddFile'
+
+loader.config({ paths: { vs: 'https://nxplus.cn/monaco-loader/vs' } })
 
 const { confirm } = Modal
 

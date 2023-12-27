@@ -1,6 +1,6 @@
 import { TaskModel } from './../../data/task'
 import TaskService from '../TaskService'
-import { Service, Inject } from 'typedi'
+import { Service } from 'typedi'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import path from 'path'
 import constant from '../../util/constant'
@@ -40,10 +40,10 @@ export default class TaskServiceImpl implements TaskService {
         // 捕获线程运行报错
         try {
           await taskCallBacks.onBefore?.(startTime)
-          const child = spawn('npx.cmd', [
-            constant.runScript[type],
-            path.join(constant.scriptPath, scriptPath || '')
-          ])
+          const child = spawn(
+            `${constant.runScript[type]}${process.platform === 'win32' ? '.cmd' : ''}`,
+            [path.join(constant.scriptPath, scriptPath || '')]
+          )
           await taskCallBacks.onStart?.(child)
           // 子线程事件监听
           child.stdout.on('data', async (chunk) => await taskCallBacks.onLog?.(chunk.toString()))

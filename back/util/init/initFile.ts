@@ -1,6 +1,7 @@
 import fs from 'fs'
-import Logger from './logger'
-import constant from './constant'
+import Logger from '../logger'
+import constant from '../constant'
+import initData from './initData'
 
 export default async () => {
   try {
@@ -10,6 +11,8 @@ export default async () => {
     const scriptDirExist = await fileExist(constant.scriptPath)
     // 判断log文件夹是否存在
     const logDirExist = await fileExist(constant.logPath)
+    // 判断db文件夹是否存在
+    const dbDirExist = await fileExist(constant.dbPath)
 
     // 创建文件
     if (!dataDirExist) {
@@ -21,8 +24,12 @@ export default async () => {
     if (!logDirExist) {
       fs.mkdirSync(constant.logPath)
     }
-
+    if (!dbDirExist) {
+      fs.mkdirSync(constant.dbPath)
+    }
     Logger.info('✌️ 文件初始化成功！')
+
+    await initData()
   } catch (error) {
     Logger.error(`✊ ${error}`)
   }

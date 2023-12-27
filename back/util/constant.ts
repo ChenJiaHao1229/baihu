@@ -1,16 +1,15 @@
 import path from 'path'
 
-const BH_Secret = 'BH_Secret'
+const BH_Secret = process.env.BH_Secret || Math.random().toString(36).substring(2)
 const BH_ExpiresIn = '480h'
-const port = 5600
-const rootPath = path.join(__dirname, '../../') as string
+const port = process.env.PORT || 5600
+const rootPath = process.cwd()
 const dataPath = path.join(rootPath, 'data')
-const templatePath = path.join(rootPath, 'template')
-const configPath = path.join(dataPath, 'config')
 const logPath = path.join(dataPath, 'log')
 const scriptPath = path.join(dataPath, 'script')
-const authPath = path.join(configPath, 'auth.json')
-const themePath = path.join(configPath, 'theme.json')
+const dbPath = path.join(dataPath, 'db')
+const varPath = path.join(dbPath, 'var.json')
+const tagPath = path.join(dbPath, 'tag.json')
 const authError = '用户名或者密码错误，请重新认证！'
 const loginFaild = '请先登录!'
 const logs = { level: 'silly' }
@@ -28,15 +27,14 @@ export default {
   port,
   rootPath,
   dataPath,
-  configPath,
   logPath,
   scriptPath,
+  dbPath,
+  varPath,
+  tagPath,
   authError,
   loginFaild,
   whitePath,
-  authPath,
-  themePath,
-  templatePath,
   logs,
   sorter,
   filesFilter,

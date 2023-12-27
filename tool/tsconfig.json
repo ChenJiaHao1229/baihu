@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "esnext", // 目标 ECMAScript 版本
+    "module": "commonjs", // 模块系统，通常使用 commonjs
+    "declaration": true, // 生成声明文件（.d.ts）
+    "outDir": "./dist", // 编译输出目录
+    "rootDir": "./src", // TypeScript 源代码目录
+    "strict": true, // 启用严格的类型检查
+    "esModuleInterop": true, // 启用模块间的默认导入和导出的互操作性
+    "skipLibCheck": true, // 跳过声明文件的类型检查
+    "forceConsistentCasingInFileNames": true, // 强制一致的文件名大小写
+    "resolveJsonModule": true, // 启用导入 .json 文件作为模块
+    "isolatedModules": true // 每个文件都是独立的模块，提高构建性能
+  },
+  "include": [
+    "src/**/*.ts" // 包含的 TypeScript 文件
+  ],
+  "exclude": [
+    "node_modules" // 排除的文件夹
+  ]
+}

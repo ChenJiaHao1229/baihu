@@ -9,7 +9,7 @@ export const VariableModel = db.define<VariableInstance>('variable', {
     unique: true,
     autoIncrement: true
   },
-  varName: {
+  name: {
     type: DataTypes.STRING,
     unique: true
   },

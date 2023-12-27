@@ -99,7 +99,7 @@ type TaskCallbacks<T = any, P = any> = {
 // 变量
 type VariableInfo = {
   id?: string
-  varName?: string
+  name?: string
   tagId?: string
   envTag?: EnvTagInfo
   value?: string

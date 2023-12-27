@@ -56,7 +56,7 @@ const AddVar: React.FC<AddVarPropsType> = ({ open, setOpen, onOk, tagList, setTa
       }}
     >
       <Form form={form} labelCol={{ span: 4 }}>
-        <Form.Item label="变量名" name="varName" rules={[{ required: true }, { max: 50 }]}>
+        <Form.Item label="变量名" name="name" rules={[{ required: true }, { max: 50 }]}>
           <Input placeholder="请输入变量名" />
         </Form.Item>
         <Form.Item label="权重" name="weight" initialValue={1} rules={[{ required: true }]}>

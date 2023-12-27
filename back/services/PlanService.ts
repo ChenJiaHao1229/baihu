@@ -10,4 +10,6 @@ export default interface PlanService {
   runPlan: (id: string) => void
 
   stopPlan: (id: string) => void
+
+  getEnablePlanList: () => Promise<PlanInfo[]>
 }

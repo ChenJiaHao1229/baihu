@@ -6,7 +6,7 @@ import FileSystem from '../FileService'
 import { getFileType } from '../../util'
 
 // 枚举文件类型
-enum FileType {
+export enum FileType {
   JSON,
   YAML,
   TEXT,

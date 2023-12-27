@@ -47,6 +47,7 @@ const Logs: React.FC = () => {
         treeData={treeData}
         fieldNames={{ title: 'name' }}
         selectedKeys={selectKeys}
+        style={{ overflow: 'scroll' }}
       />
       <main>
         <pre>{log}</pre>

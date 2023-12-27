@@ -52,7 +52,7 @@ export default {
       icon: 'https://avatars.githubusercontent.com/u/86949839?s=40&v=4',
       title: 'GitHub',
       desc: '项目地址',
-      url: 'https://ant.design'
+      url: 'https://github.com/ChenJiaHao1229'
     }
   ],
   // Monaco主题

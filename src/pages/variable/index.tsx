@@ -19,7 +19,7 @@ const VariableTable: React.FC = () => {
   const columns: ProColumns<VariableInfo>[] = [
     {
       title: '变量名',
-      dataIndex: 'varName',
+      dataIndex: 'name',
       ellipsis: true,
       width: 200,
       formItemProps: { rules: [{ required: true, message: '此项为必填项' }] }
@@ -35,7 +35,7 @@ const VariableTable: React.FC = () => {
     },
     {
       title: '标签',
-      dataIndex: 'tagId',
+      dataIndex: 'envTag',
       ellipsis: true,
       width: 200,
       formItemProps: { rules: [{ required: true, message: '此项为必填项' }] },
@@ -127,8 +127,8 @@ const VariableTable: React.FC = () => {
   }
   // 修改计划
   const handlePlan = async (key: any, record: VariableInfo) => {
-    const { id, value, varName, tagId, weight } = record
-    const res = await updateVariable({ id, value, varName, tagId, weight })
+    const { id, value, name, tagId, weight } = record
+    const res = await updateVariable({ id, value, name, tagId, weight })
     if (res.status) {
       message.success(res.message)
       return true
@@ -137,8 +137,6 @@ const VariableTable: React.FC = () => {
       Promise.reject()
     }
   }
-  // 确认删除框
-  const deleteConfirm = async (key: any, record: VariableInfo) => {}
 
   return (
     <>

@@ -100,4 +100,7 @@ export default class PlanServiceImpl implements PlanService {
       } catch (error) {}
     })
   }
+  public async getEnablePlanList() {
+    return await PlanModel.findAll({ where: { disable: false }, include: [{ model: TaskModel }] })
+  }
 }

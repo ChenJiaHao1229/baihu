@@ -1,5 +1,7 @@
-/node_modules
 /build
 /data
 /dist
 /mysqlData
+.env
+
+**/node_modules

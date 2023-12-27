@@ -1,10 +1,10 @@
-import { PlanModel } from './../data/plan'
-import { TaskModel } from './../data/task'
-import Logger from './logger'
-import { SettingModel } from '../data/setting'
-import { AuthModel } from '../data/auth'
-import constant from './constant'
-import { EnvTagModel, VariableModel } from '../data/variable'
+import { PlanModel } from '../../data/plan'
+import { TaskModel } from '../../data/task'
+import Logger from '../logger'
+import { SettingModel } from '../../data/setting'
+import { AuthModel } from '../../data/auth'
+import constant from '../constant'
+import { EnvTagModel, VariableModel } from '../../data/variable'
 
 export default async () => {
   try {
