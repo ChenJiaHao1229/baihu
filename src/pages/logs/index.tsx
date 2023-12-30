@@ -111,7 +111,7 @@ const Logs: React.FC = () => {
         </Button>
       </div>
       <main>
-        <pre>{log}</pre>
+        <pre>{log || '暂无日志'}</pre>
       </main>
     </div>
   )
