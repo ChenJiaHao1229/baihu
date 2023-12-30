@@ -1,12 +1,13 @@
 import { addTask, deleteTask, getTaskList, runTask, stopTask, updateTask } from '@/api/task'
 import { FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components'
-import { Badge, Button, message, TreeSelect } from 'antd'
+import { Badge, Button, message, Modal, TreeSelect } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import { useInterval } from 'ahooks'
 import AddTask from './AddTask'
 import { getScriptAllList } from '@/api/script'
 import constant from '@/utils/constant'
+import { getLatestLogContent } from '@/api/logs'
 
 type TaskTablePropsType = { data: PlanInfo }
 
@@ -23,6 +24,8 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
   const [open, setOpen] = useState(false)
   const taskTableRef = useRef<ActionType>() // 任务表格事件触发对象
   const [treeData, setTreeData] = useState<FileInfo[]>([])
+  const [log, setLog] = useState<string>('')
+  const [logOpen, setLogOpen] = useState<boolean>(false)
 
   const columns: ProColumns<TaskInfo>[] = [
     { title: '任务名称', dataIndex: 'taskName', ellipsis: true },
@@ -31,13 +34,9 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       dataIndex: 'path',
       ellipsis: true,
       renderFormItem: (schema, { record }) => {
-        const tree = formatTreeData(treeData, '', record?.path)
+        const tree = formatTreeData(treeData, '', record?.id)
         return (
-          <TreeSelect
-            treeData={tree}
-            fieldNames={{ value: 'key' }}
-            dropdownMatchSelectWidth={400}
-          />
+          <TreeSelect treeData={tree} fieldNames={{ value: 'key' }} popupMatchSelectWidth={400} />
         )
       }
     },
@@ -55,6 +54,7 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       ellipsis: true,
       editable: false,
       renderText: (text) => {
+        if (text === 0) return '0秒'
         if (!text) return '-'
         const hour = Math.floor(text / 60 / 60)
         const minute = Math.floor((text % (60 * 60)) / 60)
@@ -117,7 +117,8 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
           >
             运行
           </a>
-        )
+        ),
+        <a onClick={() => clickLog(record)}>日志</a>
       ]
     }
   ]
@@ -130,11 +131,19 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
     getScriptAllList().then((res) => setTreeData(res.data || []))
   }, [])
 
+  const clickLog = ({ taskName }: TaskInfo) => {
+    const { planName } = data
+    getLatestLogContent(`/${planName}/${taskName}`).then((res) => {
+      setLogOpen(true)
+      setLog(res.data!)
+    })
+  }
+
   // 处理数据
   const formatTreeData = (
     file: (FileInfo & { label?: React.ReactNode; selectable?: boolean })[],
     path: string = '',
-    key?: string
+    id?: string
   ) => {
     file.forEach((item) => {
       item.key = `${path}/${item.name}`
@@ -159,7 +168,11 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       } else {
         return (
           constant.scriptFileList.includes(item.type as string) &&
-          (item.key === key || !dataSource.map((item) => item.path!).includes(item.key))
+          (!id ||
+            !dataSource
+              .filter((item) => item.id !== id)
+              .map((item) => item.path!)
+              .includes(item.key))
         )
       }
     })
@@ -169,11 +182,9 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
   const confirmAdd = async (task: TaskInfo, setLoading: (loading: boolean) => void) => {
     try {
       setLoading(true)
-      const res = await addTask({ ...task, planId: data.id })
-      if (res.status) {
-        setOpen(false)
-        taskTableRef.current?.reload()
-      }
+      await addTask({ ...task, planId: data.id })
+      setOpen(false)
+      taskTableRef.current?.reload()
     } finally {
       setLoading(false)
     }
@@ -185,24 +196,14 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
       taskName: record.taskName,
       path: record.path
     })
-    if (res.status) {
-      message.success(res.message)
-      return true
-    } else {
-      message.error(res.message)
-      Promise.reject()
-    }
+    message.success(res.message)
+    return true
   }
   // 确认删除框
   const deleteConfirm = async (key: any, record: TaskInfo) => {
     const res = await deleteTask(record.id!)
-    if (res.status) {
-      message.success(res.message)
-      return true
-    } else {
-      message.error(res.message)
-      Promise.reject()
-    }
+    message.success(res.message)
+    return true
   }
   return (
     <>
@@ -234,6 +235,25 @@ const TaskTable: React.FC<TaskTablePropsType> = ({ data }) => {
         onOk={confirmAdd}
         treeData={formatTreeData(treeData)}
       />
+      <Modal
+        title="日志"
+        open={logOpen}
+        width={800}
+        onCancel={() => setLogOpen(false)}
+        footer={<Button onClick={() => setLogOpen(false)}>关闭</Button>}
+      >
+        <pre
+          style={{
+            height: 600,
+            overflow: 'scroll',
+            background: '#f7f7f7',
+            borderRadius: 4,
+            padding: 16
+          }}
+        >
+          {log || '暂无日志'}
+        </pre>
+      </Modal>
     </>
   )
 }

@@ -39,6 +39,28 @@ export default class FileSystemImpl implements FileSystem {
       resovle(this.data as T)
     })
   }
+
+  // 读取文件夹下最新的文件
+  readLatestFile(dirPath: string): Promise<string> {
+    return new Promise((resovle, reject) => {
+      const files = fs.readdirSync(dirPath)
+      if (files.length === 0) resovle('')
+      let time: Date | null = null
+      let latestFile = ''
+      files
+        .map((file) => path.join(dirPath, file))
+        .forEach((item) => {
+          const mtime = fs.statSync(item).mtime
+          if (!time || mtime > time) {
+            time = mtime
+            latestFile = item
+          }
+        })
+      const context = fs.readFileSync(latestFile, 'utf-8')
+      resovle(context)
+    })
+  }
+
   // 写入文件数据
   writeFile(
     filePath: string,

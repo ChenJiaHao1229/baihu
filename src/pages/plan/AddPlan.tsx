@@ -20,10 +20,8 @@ const AddPlan: React.FC<AddPlanPropsType> = ({ open, setOpen, onOk }) => {
     if (open) {
       form.resetFields()
       getScriptAllList().then((res) => {
-        if (res.status)
-          // 对数据进行处理
-          setTreeData(formatTreeData(res.data!))
-        else message.error(res.message)
+        // 对数据进行处理
+        setTreeData(formatTreeData(res.data!))
       })
     }
   }, [open])

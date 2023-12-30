@@ -47,10 +47,8 @@ const Script: React.FC = () => {
     setMenuLoading(true)
     getScriptList({ name: getPath() })
       .then((res) => {
-        if (res.status) {
-          formatRes(res.data!)
-          setMenuItems(res.data!)
-        }
+        formatRes(res.data!)
+        setMenuItems(res.data!)
       })
       .finally(() => setMenuLoading(false))
   }
@@ -196,31 +194,23 @@ const Script: React.FC = () => {
       // 判断是编辑还是新增
       if (operation) {
         const res = await renameDir({ oldName: path + operation.name, newName: path + file.name })
-        if (res.status) {
-          message.success(res.message)
-          setAddDirOpen(false)
-          // 判断修改的文件是否为当前打开的文件
-          if (file.key === operation.key)
-            setEditFile({ ...editFile!, name: file.name, key: path + file.name })
-          setMenuItems(
-            menuItems.map((item) => {
-              if (item.key === file.key) {
-                return { ...item!, name: file.name, key: path + file.name }
-              } else return item
-            })
-          )
-        } else {
-          message.error(res.message)
-        }
+        message.success(res.message)
+        setAddDirOpen(false)
+        // 判断修改的文件是否为当前打开的文件
+        if (file.key === operation.key)
+          setEditFile({ ...editFile!, name: file.name, key: path + file.name })
+        setMenuItems(
+          menuItems.map((item) => {
+            if (item.key === file.key) {
+              return { ...item!, name: file.name, key: path + file.name }
+            } else return item
+          })
+        )
       } else {
         const res = await createFile({ name: path + file.name, type: file.type })
-        if (res.status) {
-          message.success(res.message)
-          setAddDirOpen(false)
-          getScriptMenu()
-        } else {
-          message.error(res.message)
-        }
+        message.success(res.message)
+        setAddDirOpen(false)
+        getScriptMenu()
       }
     } finally {
       setLoading(false)
@@ -239,7 +229,7 @@ const Script: React.FC = () => {
       onOk() {
         const path = getPath()
         deleteFile({ name: path + file.name, type: file.type }).then((res) => {
-          if (res.status) getScriptMenu()
+          getScriptMenu()
         })
       }
     })
@@ -256,11 +246,9 @@ const Script: React.FC = () => {
               name: editFile?.key!,
               content: editorRef.current?.getValue()!
             }).then((res) => {
-              if (res.status) {
-                setIsEdit(false)
-                setEditFile({ ...editFile!, content: editorRef.current?.getValue() || '' })
-                message.success(res.message)
-              } else message.error(res.message)
+              setIsEdit(false)
+              setEditFile({ ...editFile!, content: editorRef.current?.getValue() || '' })
+              message.success(res.message)
             })
           }}
         >
@@ -297,11 +285,9 @@ const Script: React.FC = () => {
     const path = getPath()
     editorRef.current?.setValue('加载中...')
     getFileContent({ name: path + file.name }).then((res) => {
-      if (res.status) {
-        editorRef.current?.setValue(res.data)
-        setEditFile({ ...file, content: res.data })
-        setLanguage(constant.fileInfo[file.type].language)
-      } else message.error(res.message)
+      editorRef.current?.setValue(res.data)
+      setEditFile({ ...file, content: res.data })
+      setLanguage(constant.fileInfo[file.type].language)
     })
   }
   return (

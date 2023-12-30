@@ -34,14 +34,14 @@ request.interceptors.response.use(
       const { status, data, statusText } = err?.response
       message.error(`${data?.message || statusText || err?.message || err}`)
       if ([502, 504].includes(status)) {
-        eventBus.$emit('navigate', `/error`)
+        // eventBus.$emit('navigate', `/error`)
       } else if (status === 401) {
         if (location.pathname !== '/login') {
           localStorage.removeItem(constant.authToken)
           eventBus.$emit('navigate', `/login`)
         }
       }
-      return Promise.reject(err)
+      return Promise.reject(data || err)
     } catch (error) {}
   }
 )

@@ -22,13 +22,9 @@ const PasswordManage: React.FC = () => {
         message.warning('新密码不能和旧密码相同！')
         return
       }
-      if (res.status) {
-        message.success(res.message)
-        localStorage.removeItem(constant.authToken)
-        navigate('/login')
-      } else {
-        message.error(res.message)
-      }
+      message.success(res.message)
+      localStorage.removeItem(constant.authToken)
+      navigate('/login')
     })
   }
 

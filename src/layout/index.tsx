@@ -16,11 +16,7 @@ const BHLayout = () => {
 
   useEffect(() => {
     // 获取主题数据
-    getTheme().then((res) => {
-      if (res.status) {
-        setSetting(res.data?.theme)
-      }
-    })
+    getTheme().then((res) => setSetting(res.data?.theme))
   }, [])
 
   return (

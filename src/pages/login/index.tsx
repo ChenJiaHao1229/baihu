@@ -28,16 +28,13 @@ const Login: React.FC = () => {
       const values = await form.validateFields()
       const { username, password } = values
       const res = await userLogin({ username, password: cryptoJS.MD5(password).toString() })
-      if (res.status) {
-        message.success(res.message)
-        // 存储token数据
-        localStorage.setItem(constant.authToken, res.data?.token || '')
-        navigate(`/plan`)
-      } else {
-        message.error(res.message)
-        if ([410, 403].includes(res.code!) && res.data!.waitTime) {
-          setWaitTime(res.data!.waitTime!)
-        }
+      message.success(res.message)
+      // 存储token数据
+      localStorage.setItem(constant.authToken, res.data?.token || '')
+      navigate(`/plan`)
+    } catch (error: any) {
+      if ([410, 403].includes(error.code!) && error.data!.waitTime) {
+        setWaitTime(error.data!.waitTime!)
       }
     } finally {
       setLoading(false)

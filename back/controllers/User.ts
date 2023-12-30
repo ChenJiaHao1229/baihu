@@ -9,7 +9,7 @@ export default (router: Router) => {
     try {
       const { username, password } = req.query as { username: string; password: string }
       const data = await userService.login(username, password, req)
-      res.send(data)
+      res.status(data.code).send(data)
     } catch (error) {
       return next(error)
     }

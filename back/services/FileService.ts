@@ -16,4 +16,5 @@ export default interface FileSystem {
   rename: (oldFilePath: string, newOldFilePath: string) => Promise<boolean>
   rm: (filePath: string, type: number | boolean) => Promise<boolean>
   appendFile: (filePath: string, data: string) => Promise<void>
+  readLatestFile: (dirPath: string) => Promise<string>
 }

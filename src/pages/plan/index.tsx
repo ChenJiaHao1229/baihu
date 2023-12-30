@@ -101,11 +101,9 @@ const PlanTable: React.FC = () => {
     try {
       setLoading(true)
       if (values) {
-        const res = await createPlan(values)
-        if (res.status) {
-          setCreateOpen(false)
-          planTableRef.current?.reload()
-        }
+        await createPlan(values)
+        setCreateOpen(false)
+        planTableRef.current?.reload()
       }
     } finally {
       setLoading(false)
@@ -125,25 +123,15 @@ const PlanTable: React.FC = () => {
   const handlePlan = async (key: any, record: PlanInfo) => {
     const { id, planName, cron } = record
     const res = await updatePlan({ id, planName, cron })
-    if (res.status) {
-      message.success(res.message)
-      return true
-    } else {
-      message.error(res.message)
-      Promise.reject()
-    }
+    message.success(res.message)
+    return true
   }
   // 确认删除框
   const deleteConfirm = async (key: any, record: PlanInfo) => {
     const res = await deletePlan(record.id!)
-    if (res.status) {
-      message.success(res.message)
-      planTableRef.current?.reload()
-      return true
-    } else {
-      message.error(res.message)
-      Promise.reject()
-    }
+    message.success(res.message)
+    planTableRef.current?.reload()
+    return true
   }
 
   return (

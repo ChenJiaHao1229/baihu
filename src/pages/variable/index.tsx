@@ -106,10 +106,8 @@ const VariableTable: React.FC = () => {
       setLoading(true)
       if (values) {
         const res = await addVariable(values)
-        if (res.status) {
-          setAddOpen(false)
-          planTableRef.current?.reload()
-        }
+        setAddOpen(false)
+        planTableRef.current?.reload()
       }
     } finally {
       setLoading(false)
@@ -129,13 +127,8 @@ const VariableTable: React.FC = () => {
   const handlePlan = async (key: any, record: VariableInfo) => {
     const { id, value, name, tagId, weight } = record
     const res = await updateVariable({ id, value, name, tagId, weight })
-    if (res.status) {
-      message.success(res.message)
-      return true
-    } else {
-      message.error(res.message)
-      Promise.reject()
-    }
+    message.success(res.message)
+    return true
   }
 
   return (

@@ -29,7 +29,6 @@ const AddFile: React.FC<AddFilePropsType> = ({ open, setOpen, data, onOk }) => {
       title={data ? '重命名' : '新建'}
       open={open}
       onCancel={() => setOpen(false)}
-      bodyStyle={{ padding: '24px 0px' }}
       confirmLoading={loading}
       onOk={() => form.validateFields().then((values) => onOk({ ...data, ...values }, setLoading))}
     >

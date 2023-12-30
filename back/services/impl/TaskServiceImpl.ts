@@ -34,16 +34,15 @@ export default class TaskServiceImpl implements TaskService {
         const { path: scriptPath } = data
         const type = getFileType(scriptPath!)
         // 判断是否支持该类型文件
-        if (!constant.runScript[type]) throw '该文件无法运行'
+        if (!constant.runScript?.[type]?.[process.platform]) throw '该文件无法运行'
         const startTime = dayjs()
         const taskCallBacks = this.taskCallBacks(data)
         // 捕获线程运行报错
         try {
           await taskCallBacks.onBefore?.(startTime)
-          const child = spawn(
-            `${constant.runScript[type]}${process.platform === 'win32' ? '.cmd' : ''}`,
-            [path.join(constant.scriptPath, scriptPath || '')]
-          )
+          const child = spawn(constant.runScript[type][process.platform], [
+            path.join(constant.scriptPath, scriptPath || '')
+          ])
           await taskCallBacks.onStart?.(child)
           // 子线程事件监听
           child.stdout.on('data', async (chunk) => await taskCallBacks.onLog?.(chunk.toString()))

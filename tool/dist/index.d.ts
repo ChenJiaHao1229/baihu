@@ -1,3 +1,3 @@
 import Variable from './variable/index';
-import Request from './http/index';
-export { Variable, Request };
+import Http from './http/index';
+export { Variable, Http };
